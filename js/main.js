@@ -332,8 +332,214 @@ function initLeversPage() {
     if (leversData) {
       renderAllLevers();
       initTabs();
+      render64MethodsChessboard();
+      render64MethodsTable();
     }
   });
+}
+
+// ===== 64개 방법 체스보드 렌더링 =====
+function render64MethodsChessboard() {
+  const container = document.getElementById('chessboard-64');
+  if (!container || !leversData) return;
+
+  // 64개 방법을 8×8 그리드로 배열
+  // 배열: 전략1 레버1-2 (row1) → 전략1 레버3-4 (row2) → 전략2 레버1-2 (row3) → ...
+  let cells = [];
+
+  leversData.strategies.forEach((strategy, strategyIndex) => {
+    // 각 전략당 2개의 행 (레버 1-2, 레버 3-4)
+    for (let rowOffset = 0; rowOffset < 2; rowOffset++) {
+      // 각 행에 2개의 레버 (각 레버당 4개 방법)
+      for (let leverOffset = 0; leverOffset < 2; leverOffset++) {
+        const leverIndex = rowOffset * 2 + leverOffset;
+        const lever = strategy.levers[leverIndex];
+
+        lever.methods.forEach((method, methodIndex) => {
+          cells.push({
+            strategyId: strategy.id,
+            strategyName: strategy.name,
+            leverName: lever.name,
+            leverId: lever.id,
+            method: method,
+            methodIndex: methodIndex + 1
+          });
+        });
+      }
+    }
+  });
+
+  container.innerHTML = cells.map((cell, index) => `
+    <div class="method-cell strategy-${cell.strategyId}"
+         data-strategy="${cell.strategyId}"
+         data-lever="${cell.leverId}"
+         title="${cell.leverName}: ${cell.method}">
+      <span class="method-number">${cell.leverId}-${cell.methodIndex}</span>
+      <span class="method-text">${truncateText(cell.method, 15)}</span>
+    </div>
+  `).join('');
+
+  // 셀 클릭 이벤트 추가
+  container.querySelectorAll('.method-cell').forEach(cell => {
+    cell.addEventListener('click', () => {
+      const leverId = cell.dataset.lever;
+      showMethodDetail(leverId);
+    });
+  });
+}
+
+function truncateText(text, maxLength) {
+  if (text.length <= maxLength) return text;
+  return text.substring(0, maxLength) + '...';
+}
+
+function showMethodDetail(leverId) {
+  if (!leversData) return;
+
+  // 해당 레버 찾기
+  let targetLever = null;
+  let targetStrategy = null;
+
+  for (const strategy of leversData.strategies) {
+    const lever = strategy.levers.find(l => l.id === leverId);
+    if (lever) {
+      targetLever = lever;
+      targetStrategy = strategy;
+      break;
+    }
+  }
+
+  if (!targetLever) return;
+
+  // 모달 생성 및 표시
+  createMethodModal(targetLever, targetStrategy);
+}
+
+function createMethodModal(lever, strategy) {
+  // 기존 모달 제거
+  const existingModal = document.getElementById('method-detail-modal');
+  if (existingModal) existingModal.remove();
+
+  const strategyClass = getStrategyClass(strategy.id);
+
+  const modalHTML = `
+    <div id="method-detail-modal" class="modal-overlay active">
+      <div class="modal">
+        <div class="modal-header ${strategyClass}">
+          <button class="modal-close" onclick="closeMethodModal()">&times;</button>
+          <h3>${lever.name}</h3>
+          <p>${lever.nameEn}</p>
+        </div>
+        <div class="modal-body">
+          <p style="margin-bottom: 15px;">${lever.detailedDescription}</p>
+
+          <h4>4가지 세부 방법</h4>
+          <ol class="methods-list">
+            ${lever.methods.map((method, index) => `
+              <li><strong>${lever.id}-${index + 1}</strong> ${method}</li>
+            `).join('')}
+          </ol>
+
+          <div class="lever-case" style="margin-top: 20px;">
+            <h4>사례: ${lever.case.title}</h4>
+            <dl class="case-detail">
+              <dt>산업</dt>
+              <dd>${lever.case.industry}</dd>
+              <dt>상황</dt>
+              <dd>${lever.case.situation}</dd>
+              <dt>조치</dt>
+              <dd>${lever.case.action}</dd>
+              <dt>결과</dt>
+              <dd>${lever.case.result}</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+  // 모달 외부 클릭 시 닫기
+  document.getElementById('method-detail-modal').addEventListener('click', (e) => {
+    if (e.target.classList.contains('modal-overlay')) {
+      closeMethodModal();
+    }
+  });
+}
+
+function closeMethodModal() {
+  const modal = document.getElementById('method-detail-modal');
+  if (modal) {
+    modal.classList.remove('active');
+    setTimeout(() => modal.remove(), 300);
+  }
+}
+
+// ===== 64개 방법 테이블 렌더링 =====
+function render64MethodsTable() {
+  const container = document.getElementById('methods-table-container');
+  if (!container || !leversData) return;
+
+  let tableHTML = `
+    <div style="overflow-x: auto;">
+      <table class="methods-table">
+        <thead>
+          <tr>
+            <th style="width: 15%;">전략</th>
+            <th style="width: 15%;">레버</th>
+            <th style="width: 10%;">번호</th>
+            <th>세부 방법</th>
+          </tr>
+        </thead>
+        <tbody>
+  `;
+
+  leversData.strategies.forEach(strategy => {
+    const strategyRowSpan = strategy.levers.length * 4; // 4 levers × 4 methods
+
+    strategy.levers.forEach((lever, leverIndex) => {
+      lever.methods.forEach((method, methodIndex) => {
+        tableHTML += '<tr class="strategy-row-' + strategy.id + '">';
+
+        // 전략 셀 (첫 번째 레버의 첫 번째 방법에만)
+        if (leverIndex === 0 && methodIndex === 0) {
+          tableHTML += `
+            <td rowspan="${strategyRowSpan}" class="strategy-cell strategy-${strategy.id}">
+              <strong>${strategy.id}. ${strategy.name}</strong><br>
+              <span style="font-size: 0.8rem; color: var(--text-light);">${strategy.nameEn}</span>
+            </td>
+          `;
+        }
+
+        // 레버 셀 (각 레버의 첫 번째 방법에만)
+        if (methodIndex === 0) {
+          tableHTML += `
+            <td rowspan="4" class="lever-cell">
+              <strong>${lever.id}</strong><br>
+              ${lever.name}
+            </td>
+          `;
+        }
+
+        // 방법 번호와 내용
+        tableHTML += `
+          <td class="method-num">${lever.id}-${methodIndex + 1}</td>
+          <td>${method}</td>
+        `;
+
+        tableHTML += '</tr>';
+      });
+    });
+  });
+
+  tableHTML += `
+        </tbody>
+      </table>
+    </div>
+  `;
+
+  container.innerHTML = tableHTML;
 }
 
 function renderAllLevers() {

@@ -906,6 +906,191 @@ p {
   font-size: 0.9rem;
 }
 
+/* ===== 64 Methods Chessboard ===== */
+.chessboard-64 {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 2px;
+  background: var(--border-color);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.method-cell {
+  aspect-ratio: 1;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 0.7rem;
+  line-height: 1.3;
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+}
+
+.method-cell:hover {
+  transform: scale(1.05);
+  z-index: 10;
+  box-shadow: var(--shadow-lg);
+}
+
+.method-cell.strategy-1 { background: rgba(231, 76, 60, 0.15); }
+.method-cell.strategy-2 { background: rgba(52, 152, 219, 0.15); }
+.method-cell.strategy-3 { background: rgba(46, 204, 113, 0.15); }
+.method-cell.strategy-4 { background: rgba(155, 89, 182, 0.15); }
+
+.method-cell.strategy-1:hover { background: rgba(231, 76, 60, 0.3); }
+.method-cell.strategy-2:hover { background: rgba(52, 152, 219, 0.3); }
+.method-cell.strategy-3:hover { background: rgba(46, 204, 113, 0.3); }
+.method-cell.strategy-4:hover { background: rgba(155, 89, 182, 0.3); }
+
+.method-cell .method-number {
+  position: absolute;
+  top: 4px;
+  left: 6px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  opacity: 0.5;
+}
+
+.method-cell .method-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 8px;
+  word-break: keep-all;
+}
+
+.chessboard-legend {
+  display: flex;
+  justify-content: center;
+  gap: 25px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+}
+
+.legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+}
+
+/* 64 Methods Table */
+.methods-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.methods-table th,
+.methods-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.methods-table th {
+  background: var(--primary-color);
+  color: var(--white);
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+}
+
+.methods-table tr:hover {
+  background: var(--light-bg);
+}
+
+.methods-table .strategy-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--white);
+}
+
+.methods-table .strategy-badge.s1 { background: var(--accent-color); }
+.methods-table .strategy-badge.s2 { background: var(--secondary-color); }
+.methods-table .strategy-badge.s3 { background: var(--success-color); }
+.methods-table .strategy-badge.s4 { background: var(--purple-color); }
+
+.methods-table .strategy-cell.strategy-1 { background: rgba(231, 76, 60, 0.1); }
+.methods-table .strategy-cell.strategy-2 { background: rgba(52, 152, 219, 0.1); }
+.methods-table .strategy-cell.strategy-3 { background: rgba(46, 204, 113, 0.1); }
+.methods-table .strategy-cell.strategy-4 { background: rgba(155, 89, 182, 0.1); }
+
+.methods-table .lever-cell {
+  background: var(--light-bg);
+  vertical-align: middle;
+}
+
+.methods-table .method-num {
+  font-weight: 600;
+  color: var(--text-light);
+  font-size: 0.85rem;
+}
+
+/* Methods List in Modal */
+.methods-list {
+  padding-left: 0;
+  margin-bottom: 0;
+}
+
+.methods-list li {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--light-bg);
+  list-style: none;
+}
+
+.methods-list li:last-child {
+  border-bottom: none;
+}
+
+.methods-list li strong {
+  display: inline-block;
+  background: var(--light-bg);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  margin-right: 8px;
+  color: var(--primary-color);
+}
+
+@media (max-width: 768px) {
+  .chessboard-64 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .method-cell {
+    font-size: 0.6rem;
+    padding: 6px;
+  }
+
+  .chessboard-legend {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .chessboard-64 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 /* ===== Share Section ===== */
 .share-section {
   margin-top: 25px;
