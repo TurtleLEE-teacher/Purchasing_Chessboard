@@ -535,3 +535,210 @@ function resetSurvey() {
     window.location.href = 'survey.html';
   }
 }
+
+// ===== 공유/저장 기능 =====
+function showToast(message, type = '') {
+  const toast = document.getElementById('toast');
+  if (!toast) return;
+
+  toast.textContent = message;
+  toast.className = 'toast show ' + type;
+
+  setTimeout(() => {
+    toast.className = 'toast';
+  }, 3000);
+}
+
+function getResultText() {
+  const resultData = sessionStorage.getItem('surveyResult');
+  if (!resultData) return '';
+
+  const result = JSON.parse(resultData);
+  const strategy = leversData?.strategies.find(s => s.id === result.strategy);
+
+  let text = `===== 구매 체스보드 분석 결과 =====\n\n`;
+  text += `[분석 점수]\n`;
+  text += `- 공급력 (Supply Power): ${Math.round(result.supplyPercent)}%\n`;
+  text += `- 수요력 (Demand Power): ${Math.round(result.demandPercent)}%\n\n`;
+
+  if (strategy) {
+    text += `[추천 전략]\n`;
+    text += `${strategy.id}. ${strategy.name} (${strategy.nameEn})\n`;
+    text += `${strategy.description}\n\n`;
+
+    text += `[추천 레버]\n`;
+    strategy.levers.forEach(lever => {
+      text += `- ${lever.name}: ${lever.description}\n`;
+    });
+  }
+
+  text += `\n===================================\n`;
+  text += `분석 일시: ${new Date().toLocaleString('ko-KR')}\n`;
+  text += `구매 체스보드 실습 사이트`;
+
+  return text;
+}
+
+function copyResultToClipboard() {
+  const text = getResultText();
+  if (!text) {
+    showToast('결과를 불러올 수 없습니다.', 'error');
+    return;
+  }
+
+  navigator.clipboard.writeText(text).then(() => {
+    showToast('결과가 클립보드에 복사되었습니다!', 'success');
+  }).catch(() => {
+    // Fallback for older browsers
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textarea);
+    showToast('결과가 클립보드에 복사되었습니다!', 'success');
+  });
+}
+
+function shareResultLink() {
+  const resultData = sessionStorage.getItem('surveyResult');
+  if (!resultData) {
+    showToast('공유할 결과가 없습니다.', 'error');
+    return;
+  }
+
+  // 결과를 Base64로 인코딩하여 URL 파라미터로 전달
+  const encoded = btoa(encodeURIComponent(resultData));
+  const baseUrl = window.location.origin + window.location.pathname;
+  const shareUrl = `${baseUrl}?r=${encoded}`;
+
+  // 공유 링크 모달 생성 및 표시
+  createShareLinkModal(shareUrl);
+}
+
+function createShareLinkModal(shareUrl) {
+  // 기존 모달 제거
+  const existingModal = document.getElementById('share-link-modal');
+  if (existingModal) existingModal.remove();
+
+  const modalHTML = `
+    <div id="share-link-modal" class="share-link-modal active">
+      <div class="share-link-content">
+        <h3>결과 공유 링크</h3>
+        <div class="share-link-input-group">
+          <input type="text" id="share-url-input" value="${shareUrl}" readonly>
+          <button onclick="copyShareLink()">복사</button>
+        </div>
+        <p style="font-size: 0.85rem; color: var(--text-light); margin-bottom: 20px; text-align: center;">
+          이 링크를 공유하면 동일한 분석 결과를 볼 수 있습니다.
+        </p>
+        <button class="share-link-close" onclick="closeShareLinkModal()">닫기</button>
+      </div>
+    </div>
+  `;
+
+  document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+  // 모달 외부 클릭 시 닫기
+  document.getElementById('share-link-modal').addEventListener('click', (e) => {
+    if (e.target.classList.contains('share-link-modal')) {
+      closeShareLinkModal();
+    }
+  });
+}
+
+function copyShareLink() {
+  const input = document.getElementById('share-url-input');
+  if (!input) return;
+
+  input.select();
+  navigator.clipboard.writeText(input.value).then(() => {
+    showToast('링크가 복사되었습니다!', 'success');
+  }).catch(() => {
+    document.execCommand('copy');
+    showToast('링크가 복사되었습니다!', 'success');
+  });
+}
+
+function closeShareLinkModal() {
+  const modal = document.getElementById('share-link-modal');
+  if (modal) {
+    modal.classList.remove('active');
+    setTimeout(() => modal.remove(), 300);
+  }
+}
+
+function printResult() {
+  window.print();
+}
+
+function downloadResultAsImage() {
+  // html2canvas 라이브러리가 없으면 안내
+  if (typeof html2canvas === 'undefined') {
+    // 간단한 대안: 텍스트 파일로 다운로드
+    downloadResultAsText();
+    return;
+  }
+
+  const resultSection = document.querySelector('.result-summary');
+  html2canvas(resultSection).then(canvas => {
+    const link = document.createElement('a');
+    link.download = `구매체스보드_분석결과_${new Date().toISOString().split('T')[0]}.png`;
+    link.href = canvas.toDataURL();
+    link.click();
+    showToast('이미지가 저장되었습니다!', 'success');
+  });
+}
+
+function downloadResultAsText() {
+  const text = getResultText();
+  if (!text) {
+    showToast('결과를 불러올 수 없습니다.', 'error');
+    return;
+  }
+
+  const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `구매체스보드_분석결과_${new Date().toISOString().split('T')[0]}.txt`;
+  link.click();
+  URL.revokeObjectURL(url);
+  showToast('텍스트 파일로 저장되었습니다!', 'success');
+}
+
+// URL 파라미터에서 결과 로드 (공유 링크로 접속 시)
+function loadResultFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  const encodedResult = params.get('r');
+
+  if (encodedResult) {
+    try {
+      const decoded = decodeURIComponent(atob(encodedResult));
+      sessionStorage.setItem('surveyResult', decoded);
+      // URL에서 파라미터 제거 (깔끔한 URL 유지)
+      window.history.replaceState({}, '', window.location.pathname);
+      return true;
+    } catch (e) {
+      console.error('결과 로드 실패:', e);
+    }
+  }
+  return false;
+}
+
+// 결과 페이지 초기화 시 URL 파라미터 확인
+const originalInitResultPage = typeof initResultPage !== 'undefined' ? initResultPage : null;
+initResultPage = function() {
+  loadResultFromURL();
+
+  const resultData = sessionStorage.getItem('surveyResult');
+  if (!resultData) {
+    window.location.href = 'survey.html';
+    return;
+  }
+
+  loadLeversData().then(() => {
+    const result = JSON.parse(resultData);
+    renderResult(result);
+  });
+}
