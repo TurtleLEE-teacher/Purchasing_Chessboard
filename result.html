@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>분석 결과 | 구매 체스보드</title>
+  <meta name="description" content="구매 상황 분석 결과 및 추천 전략">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="result">
+  <!-- Header -->
+  <header class="header">
+    <div class="container">
+      <a href="index.html" class="logo">구매<span>체스보드</span></a>
+      <nav class="nav">
+        <ul>
+          <li><a href="index.html">홈</a></li>
+          <li><a href="survey.html">분석하기</a></li>
+          <li><a href="levers.html">16개 레버</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Result Section -->
+  <section class="section">
+    <div class="container">
+      <h1 class="text-center mb-3">분석 결과</h1>
+
+      <!-- Result Summary -->
+      <div class="result-summary">
+        <div class="result-position">
+          <!-- Scores -->
+          <div class="result-scores">
+            <h3 class="mb-2">분석 점수</h3>
+            <div class="score-item">
+              <div class="score-label">
+                <span>공급력 (Supply Power)</span>
+                <span id="supply-value">0%</span>
+              </div>
+              <div class="score-bar">
+                <div class="score-fill supply" id="supply-bar" style="width: 0%"></div>
+              </div>
+              <p style="font-size: 0.85rem; color: var(--text-light); margin-top: 5px;">
+                높을수록 공급업체의 협상력이 강함
+              </p>
+            </div>
+            <div class="score-item">
+              <div class="score-label">
+                <span>수요력 (Demand Power)</span>
+                <span id="demand-value">0%</span>
+              </div>
+              <div class="score-bar">
+                <div class="score-fill demand" id="demand-bar" style="width: 0%"></div>
+              </div>
+              <p style="font-size: 0.85rem; color: var(--text-light); margin-top: 5px;">
+                높을수록 구매자의 협상력이 강함
+              </p>
+            </div>
+          </div>
+
+          <!-- Strategy Result -->
+          <div class="result-strategy">
+            <p style="color: var(--text-light); margin-bottom: 10px;">추천 전략</p>
+            <h3 id="strategy-name">-</h3>
+            <p id="strategy-name-en" style="color: var(--text-light);">-</p>
+            <p id="strategy-description" class="mt-2" style="font-size: 0.95rem;">-</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chessboard Position -->
+      <div class="card mb-3">
+        <h3 class="text-center mb-2">체스보드 위치</h3>
+        <div class="chessboard-container" style="padding: 20px 0;">
+          <div class="chessboard">
+            <!-- Y-axis label -->
+            <div class="axis-label y-axis" style="grid-row: 1 / 3;">수요력</div>
+
+            <!-- Row 1: 높은 수요력 -->
+            <div class="chessboard-cell leverage-competition" data-strategy="3">
+              <h4>3. 경쟁 활용</h4>
+              <p style="font-size: 0.8rem;">Leverage Competition</p>
+            </div>
+            <div class="chessboard-cell joint-advantage" data-strategy="4">
+              <h4>4. 공동이익 추구</h4>
+              <p style="font-size: 0.8rem;">Seek Joint Advantage</p>
+            </div>
+
+            <!-- Row 2: 낮은 수요력 -->
+            <div class="chessboard-cell manage-spend" data-strategy="2">
+              <h4>2. 지출 관리</h4>
+              <p style="font-size: 0.8rem;">Manage Spend</p>
+            </div>
+            <div class="chessboard-cell demand-change" data-strategy="1">
+              <h4>1. 수요성질 변경</h4>
+              <p style="font-size: 0.8rem;">Change Nature of Demand</p>
+            </div>
+
+            <!-- X-axis labels -->
+            <div class="axis-label" style="grid-column: 1;"></div>
+            <div class="axis-label text-center" style="font-size: 0.8rem;">공급력 낮음</div>
+            <div class="axis-label text-center" style="font-size: 0.8rem;">공급력 높음</div>
+          </div>
+          <p class="text-center mt-1" style="color: var(--text-light); font-size: 0.9rem;">공급력 →</p>
+        </div>
+      </div>
+
+      <!-- Recommended Levers -->
+      <h2 class="text-center mb-3">추천 레버</h2>
+      <div id="recommended-levers">
+        <!-- 레버 카드가 JavaScript로 동적 렌더링됩니다 -->
+        <p class="text-center" style="color: var(--text-light);">결과를 불러오는 중...</p>
+      </div>
+
+      <!-- Actions -->
+      <div class="text-center mt-3" style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+        <a href="survey.html" class="btn btn-secondary" onclick="resetSurvey()">다시 분석하기</a>
+        <a href="levers.html" class="btn btn-primary">모든 레버 보기</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tips Section -->
+  <section class="section" style="background: var(--white);">
+    <div class="container">
+      <h2 class="text-center mb-3">활용 팁</h2>
+      <div class="card-grid" style="max-width: 900px; margin: 0 auto;">
+        <div class="card">
+          <h4>단일 레버에 집중하지 마세요</h4>
+          <p style="color: var(--text-light);">
+            하나의 전략 내에서도 여러 레버를 조합하여 활용하면 더 큰 효과를 얻을 수 있습니다.
+          </p>
+        </div>
+        <div class="card">
+          <h4>상황 변화를 모니터링하세요</h4>
+          <p style="color: var(--text-light);">
+            시장 상황, 공급업체 관계, 구매력은 시간에 따라 변합니다. 정기적으로 재분석하세요.
+          </p>
+        </div>
+        <div class="card">
+          <h4>전략적 이동을 고려하세요</h4>
+          <p style="color: var(--text-light);">
+            현재 위치에서 더 유리한 위치로 이동하기 위한 장기적 전략을 수립하세요.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <p>구매 체스보드 실습 사이트 | 교육 목적으로 제작</p>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
