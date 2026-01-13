@@ -673,38 +673,38 @@ function printResult() {
 }
 
 function downloadResultAsImage() {
-  // html2canvas 라이브러리가 없으면 안내
-  if (typeof html2canvas === 'undefined') {
-    // 간단한 대안: 텍스트 파일로 다운로드
-    downloadResultAsText();
-    return;
-  }
-
   const resultSection = document.querySelector('.result-summary');
-  html2canvas(resultSection).then(canvas => {
-    const link = document.createElement('a');
-    link.download = `구매체스보드_분석결과_${new Date().toISOString().split('T')[0]}.png`;
-    link.href = canvas.toDataURL();
-    link.click();
-    showToast('이미지가 저장되었습니다!', 'success');
-  });
-}
-
-function downloadResultAsText() {
-  const text = getResultText();
-  if (!text) {
+  if (!resultSection) {
     showToast('결과를 불러올 수 없습니다.', 'error');
     return;
   }
 
-  const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = `구매체스보드_분석결과_${new Date().toISOString().split('T')[0]}.txt`;
-  link.click();
-  URL.revokeObjectURL(url);
-  showToast('텍스트 파일로 저장되었습니다!', 'success');
+  showToast('이미지 생성 중...', '');
+
+  // 공유 버튼 섹션 임시 숨김
+  const shareSection = resultSection.querySelector('.share-section');
+  if (shareSection) shareSection.style.display = 'none';
+
+  html2canvas(resultSection, {
+    backgroundColor: '#ffffff',
+    scale: 2,
+    useCORS: true,
+    logging: false
+  }).then(canvas => {
+    // 공유 버튼 섹션 복원
+    if (shareSection) shareSection.style.display = '';
+
+    const link = document.createElement('a');
+    link.download = `구매체스보드_분석결과_${new Date().toISOString().split('T')[0]}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    showToast('이미지가 저장되었습니다!', 'success');
+  }).catch(err => {
+    // 공유 버튼 섹션 복원
+    if (shareSection) shareSection.style.display = '';
+    console.error('이미지 생성 실패:', err);
+    showToast('이미지 저장에 실패했습니다.', 'error');
+  });
 }
 
 // URL 파라미터에서 결과 로드 (공유 링크로 접속 시)
