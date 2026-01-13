@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>구매 체스보드 | Purchasing Chessboard 실습 사이트</title>
+  <meta name="description" content="A.T. Kearney의 구매 체스보드 프레임워크를 학습하는 인터랙티브 교육 플랫폼">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="index">
+  <!-- Header -->
+  <header class="header">
+    <div class="container">
+      <a href="index.html" class="logo">구매<span>체스보드</span></a>
+      <nav class="nav">
+        <ul>
+          <li><a href="index.html" class="active">홈</a></li>
+          <li><a href="survey.html">분석하기</a></li>
+          <li><a href="levers.html">16개 레버</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <h1>구매 체스보드</h1>
+      <p>A.T. Kearney(현 Kearney)가 개발한 전략적 구매 프레임워크를 통해<br>
+        최적의 구매 전략과 레버를 찾아보세요.</p>
+      <div class="hero-buttons">
+        <a href="survey.html" class="btn btn-primary btn-large">분석 시작하기</a>
+        <a href="levers.html" class="btn btn-secondary btn-large">레버 살펴보기</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section class="section">
+    <div class="container">
+      <h2 class="text-center mb-3">구매 체스보드란?</h2>
+      <p class="text-center" style="max-width: 800px; margin: 0 auto 40px;">
+        2008년 A.T. Kearney가 1,000개 이상의 구매 프로젝트 경험을 바탕으로 개발한 전략적 구매 프레임워크입니다.
+        <strong>4가지 전략 → 16가지 레버 → 64가지 방법</strong>의 계층 구조로 구성되어 있습니다.
+      </p>
+
+      <!-- Chessboard Visual -->
+      <div class="chessboard-container">
+        <div class="chessboard">
+          <!-- Y-axis label -->
+          <div class="axis-label y-axis" style="grid-row: 1 / 3;">수요력 (Demand Power)</div>
+
+          <!-- Row 1: 높은 수요력 -->
+          <div class="chessboard-cell leverage-competition" data-strategy="3">
+            <h4>3. 경쟁 활용</h4>
+            <p>Leverage Competition</p>
+          </div>
+          <div class="chessboard-cell joint-advantage" data-strategy="4">
+            <h4>4. 공동이익 추구</h4>
+            <p>Seek Joint Advantage</p>
+          </div>
+
+          <!-- Row 2: 낮은 수요력 -->
+          <div class="chessboard-cell manage-spend" data-strategy="2">
+            <h4>2. 지출 관리</h4>
+            <p>Manage Spend</p>
+          </div>
+          <div class="chessboard-cell demand-change" data-strategy="1">
+            <h4>1. 수요성질 변경</h4>
+            <p>Change Nature of Demand</p>
+          </div>
+
+          <!-- X-axis labels -->
+          <div class="axis-label" style="grid-column: 1;"></div>
+          <div class="axis-label text-center">공급력 낮음</div>
+          <div class="axis-label text-center">공급력 높음</div>
+        </div>
+        <p class="text-center mt-2" style="color: var(--text-light);">공급력 (Supply Power) →</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 Strategies Section -->
+  <section class="section" style="background: var(--white);">
+    <div class="container">
+      <h2 class="text-center mb-3">4가지 전략</h2>
+      <div class="card-grid">
+        <div class="card strategy-card demand-change">
+          <h3><span class="strategy-number">1</span> 수요 성질 변경</h3>
+          <p><strong>Change Nature of Demand</strong></p>
+          <p>공급력 높음 + 수요력 낮음</p>
+          <p>독점 상황 탈피를 위한 기술적 접근</p>
+          <ul style="margin-top: 15px;">
+            <li>• 위험 관리</li>
+            <li>• 혁신 돌파</li>
+            <li>• 기술 데이터 마이닝</li>
+            <li>• 재사양화</li>
+          </ul>
+        </div>
+
+        <div class="card strategy-card manage-spend">
+          <h3><span class="strategy-number">2</span> 지출 관리</h3>
+          <p><strong>Manage Spend</strong></p>
+          <p>공급력 낮음 + 수요력 낮음</p>
+          <p>수요 통합 및 효율화</p>
+          <ul style="margin-top: 15px;">
+            <li>• 수요 관리</li>
+            <li>• 공동조달</li>
+            <li>• 물량 통합</li>
+            <li>• 상업 데이터 마이닝</li>
+          </ul>
+        </div>
+
+        <div class="card strategy-card leverage-competition">
+          <h3><span class="strategy-number">3</span> 경쟁 활용</h3>
+          <p><strong>Leverage Competition</strong></p>
+          <p>공급력 낮음 + 수요력 높음</p>
+          <p>공급자 간 경쟁 유도</p>
+          <ul style="margin-top: 15px;">
+            <li>• 글로벌화</li>
+            <li>• 입찰</li>
+            <li>• 목표가격 책정</li>
+            <li>• 가격 검증</li>
+          </ul>
+        </div>
+
+        <div class="card strategy-card joint-advantage">
+          <h3><span class="strategy-number">4</span> 공동 이익 추구</h3>
+          <p><strong>Seek Joint Advantage</strong></p>
+          <p>공급력 높음 + 수요력 높음</p>
+          <p>파트너십 기반 가치 창출</p>
+          <ul style="margin-top: 15px;">
+            <li>• 통합 운영 계획</li>
+            <li>• 가치사슬 관리</li>
+            <li>• 원가 파트너십</li>
+            <li>• 가치 파트너십</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How to Use Section -->
+  <section class="section">
+    <div class="container">
+      <h2 class="text-center mb-3">사용 방법</h2>
+      <div class="card-grid" style="max-width: 900px; margin: 0 auto;">
+        <div class="card text-center">
+          <h3 style="font-size: 3rem; margin-bottom: 10px;">1</h3>
+          <h4>설문 응답</h4>
+          <p>12개 질문에 답변하여 현재 구매 상황을 분석합니다.</p>
+        </div>
+        <div class="card text-center">
+          <h3 style="font-size: 3rem; margin-bottom: 10px;">2</h3>
+          <h4>결과 확인</h4>
+          <p>체스보드 상 위치와 추천 전략/레버를 확인합니다.</p>
+        </div>
+        <div class="card text-center">
+          <h3 style="font-size: 3rem; margin-bottom: 10px;">3</h3>
+          <h4>사례 학습</h4>
+          <p>각 레버별 실제 적용 사례를 학습합니다.</p>
+        </div>
+      </div>
+      <div class="text-center mt-3">
+        <a href="survey.html" class="btn btn-primary btn-large">지금 시작하기</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <p>구매 체스보드 실습 사이트 | 교육 목적으로 제작</p>
+      <p style="margin-top: 10px; font-size: 0.9rem;">
+        Reference: Schuh, C. et al. (2008). "The Purchasing Chessboard"
+      </p>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

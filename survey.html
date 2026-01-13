@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>구매 상황 분석 | 구매 체스보드</title>
+  <meta name="description" content="12개 질문을 통해 귀사의 구매 상황을 분석합니다.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="survey">
+  <!-- Header -->
+  <header class="header">
+    <div class="container">
+      <a href="index.html" class="logo">구매<span>체스보드</span></a>
+      <nav class="nav">
+        <ul>
+          <li><a href="index.html">홈</a></li>
+          <li><a href="survey.html" class="active">분석하기</a></li>
+          <li><a href="levers.html">16개 레버</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Survey Section -->
+  <section class="section">
+    <div class="container">
+      <div class="survey-container">
+        <h1 class="text-center mb-2">구매 상황 분석</h1>
+        <p class="text-center mb-3" style="color: var(--text-light);">
+          12개 질문에 답변하여 최적의 구매 전략을 찾아보세요. (약 5분 소요)
+        </p>
+
+        <!-- Progress Bar -->
+        <div class="survey-progress">
+          <div class="survey-progress-bar" id="progress-bar" style="width: 0%"></div>
+        </div>
+        <p class="text-center mb-3" style="color: var(--text-light);">
+          진행률: <span id="progress-text">1 / 12</span>
+        </p>
+
+        <!-- Question Container -->
+        <div id="question-container">
+          <!-- 질문이 JavaScript로 동적 렌더링됩니다 -->
+          <div class="survey-question">
+            <p class="text-center">설문을 불러오는 중...</p>
+          </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="survey-navigation">
+          <button id="prev-btn" class="btn btn-secondary" onclick="prevQuestion()" style="visibility: hidden;">
+            이전
+          </button>
+          <button id="next-btn" class="btn btn-primary" onclick="nextQuestion()">
+            다음
+          </button>
+        </div>
+
+        <!-- Reset Button -->
+        <div class="text-center mt-3">
+          <button class="btn btn-small" style="background: transparent; color: var(--text-light);" onclick="resetSurvey()">
+            처음부터 다시하기
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Info Section -->
+  <section class="section" style="background: var(--white); padding: 40px 0;">
+    <div class="container">
+      <div style="max-width: 700px; margin: 0 auto;">
+        <h3 class="text-center mb-2">설문 구성 안내</h3>
+        <div class="card-grid" style="grid-template-columns: 1fr 1fr;">
+          <div class="card" style="border-left: 4px solid var(--accent-color);">
+            <h4>공급력(Supply Power) 평가</h4>
+            <p style="color: var(--text-light); margin-bottom: 10px;">6문항</p>
+            <ul style="font-size: 0.9rem; color: var(--text-light);">
+              <li>• 대체 공급업체 존재 여부</li>
+              <li>• 공급업체 전환 비용</li>
+              <li>• 기술적 독점성</li>
+              <li>• 시장 내 공급업체 수</li>
+              <li>• 공급업체 협상 태도</li>
+              <li>• 원자재/부품 희소성</li>
+            </ul>
+          </div>
+          <div class="card" style="border-left: 4px solid var(--success-color);">
+            <h4>수요력(Demand Power) 평가</h4>
+            <p style="color: var(--text-light); margin-bottom: 10px;">6문항</p>
+            <ul style="font-size: 0.9rem; color: var(--text-light);">
+              <li>• 구매 물량 규모</li>
+              <li>• 공급업체 매출 내 비중</li>
+              <li>• 가격 협상력</li>
+              <li>• 장기 계약 가능성</li>
+              <li>• 대량 구매 능력</li>
+              <li>• 시장 내 구매자 지위</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <p>구매 체스보드 실습 사이트 | 교육 목적으로 제작</p>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
