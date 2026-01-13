@@ -225,6 +225,22 @@ p {
   gap: 30px;
 }
 
+.card-grid.four-columns {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+@media (max-width: 1200px) {
+  .card-grid.four-columns {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .card-grid.four-columns {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ===== Strategy Cards ===== */
 .strategy-card {
   border-left: 4px solid;
@@ -296,12 +312,37 @@ p {
 .chessboard-cell.joint-advantage { background: rgba(155, 89, 182, 0.15); }
 
 .chessboard-cell.active {
-  animation: pulse 2s infinite;
+  animation: pulse 1.5s infinite;
+  position: relative;
+  z-index: 20;
+}
+
+.chessboard-cell.active::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  right: -4px;
+  bottom: -4px;
+  border: 4px solid #e74c3c;
+  border-radius: 8px;
+  animation: border-pulse 1.5s infinite;
 }
 
 @keyframes pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(52, 152, 219, 0.4); }
-  50% { box-shadow: 0 0 0 15px rgba(52, 152, 219, 0); }
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 20px 10px rgba(231, 76, 60, 0.3);
+    transform: scale(1.02);
+  }
+}
+
+@keyframes border-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
 
 .axis-label {
@@ -312,9 +353,11 @@ p {
 }
 
 .axis-label.y-axis {
-  writing-mode: vertical-rl;
+  writing-mode: vertical-lr;
   text-orientation: mixed;
-  transform: rotate(180deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* ===== Survey ===== */
@@ -717,6 +760,150 @@ p {
     flex-direction: column;
     align-items: center;
   }
+}
+
+/* ===== Modal ===== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  opacity: 0;
+  visibility: hidden;
+  transition: var(--transition);
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  transform: scale(0.9);
+  transition: var(--transition);
+}
+
+.modal-overlay.active .modal {
+  transform: scale(1);
+}
+
+.modal-header {
+  padding: 25px 30px;
+  color: var(--white);
+  position: relative;
+}
+
+.modal-header.demand-change { background: var(--accent-color); }
+.modal-header.manage-spend { background: var(--secondary-color); }
+.modal-header.leverage-competition { background: var(--success-color); }
+.modal-header.joint-advantage { background: var(--purple-color); }
+
+.modal-header h3 {
+  margin-bottom: 5px;
+}
+
+.modal-header p {
+  opacity: 0.9;
+  margin-bottom: 0;
+}
+
+.modal-close {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  background: rgba(255,255,255,0.2);
+  border: none;
+  color: var(--white);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+}
+
+.modal-close:hover {
+  background: rgba(255,255,255,0.3);
+}
+
+.modal-body {
+  padding: 30px;
+}
+
+.modal-body h4 {
+  color: var(--primary-color);
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--light-bg);
+}
+
+.example-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 25px;
+}
+
+.example-item {
+  background: var(--light-bg);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  color: var(--text-dark);
+}
+
+.modal-levers {
+  list-style: none;
+}
+
+.modal-levers li {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--light-bg);
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.modal-levers li:last-child {
+  border-bottom: none;
+}
+
+.lever-num {
+  background: var(--primary-color);
+  color: var(--white);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+
+.lever-info strong {
+  display: block;
+  margin-bottom: 3px;
+}
+
+.lever-info span {
+  color: var(--text-light);
+  font-size: 0.9rem;
 }
 
 /* ===== Print Styles ===== */

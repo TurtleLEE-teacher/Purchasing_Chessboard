@@ -8,6 +8,15 @@
       "supplyPower": "high",
       "demandPower": "low",
       "color": "#e74c3c",
+      "exampleItems": [
+        "특허 보호 의약품",
+        "독점 반도체 칩",
+        "희토류 소재",
+        "특수 화학물질",
+        "맞춤형 산업설비",
+        "독점 소프트웨어 라이선스",
+        "항공기 엔진 부품"
+      ],
       "levers": [
         {
           "id": "1-1",
@@ -99,6 +108,15 @@
       "supplyPower": "low",
       "demandPower": "low",
       "color": "#3498db",
+      "exampleItems": [
+        "사무용품",
+        "복리후생 서비스",
+        "일반 소모품",
+        "인쇄/복사 서비스",
+        "여행/출장 서비스",
+        "시설관리 용역",
+        "일반 MRO 자재"
+      ],
       "levers": [
         {
           "id": "2-1",
@@ -190,6 +208,15 @@
       "supplyPower": "low",
       "demandPower": "high",
       "color": "#2ecc71",
+      "exampleItems": [
+        "범용 전자부품",
+        "물류/운송 서비스",
+        "포장재",
+        "일반 철강/금속",
+        "플라스틱 사출물",
+        "광고/마케팅 서비스",
+        "IT 하드웨어"
+      ],
       "levers": [
         {
           "id": "3-1",
@@ -281,6 +308,15 @@
       "supplyPower": "high",
       "demandPower": "high",
       "color": "#9b59b6",
+      "exampleItems": [
+        "핵심 Tier-1 부품",
+        "전략적 원자재",
+        "핵심 설비/장비",
+        "주요 IT 시스템",
+        "공동개발 신소재",
+        "OEM 완제품",
+        "장기 서비스 계약"
+      ],
       "levers": [
         {
           "id": "4-1",
