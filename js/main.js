@@ -401,6 +401,7 @@ function initTabs() {
 
 // ===== 체스보드 인터랙션 =====
 function initChessboard() {
+  createModal();
   const cells = document.querySelectorAll('.chessboard-cell[data-strategy]');
   cells.forEach(cell => {
     cell.addEventListener('click', () => {
@@ -410,14 +411,96 @@ function initChessboard() {
   });
 }
 
+function createModal() {
+  if (document.getElementById('strategy-modal')) return;
+
+  const modalHTML = `
+    <div id="strategy-modal" class="modal-overlay">
+      <div class="modal">
+        <div class="modal-header" id="modal-header">
+          <button class="modal-close" onclick="closeModal()">&times;</button>
+          <h3 id="modal-title"></h3>
+          <p id="modal-subtitle"></p>
+        </div>
+        <div class="modal-body">
+          <p id="modal-description" style="margin-bottom: 20px;"></p>
+
+          <h4>해당 품목 예시</h4>
+          <div id="modal-examples" class="example-items"></div>
+
+          <h4>4가지 레버</h4>
+          <ul id="modal-levers" class="modal-levers"></ul>
+
+          <div class="text-center mt-3">
+            <a href="levers.html" class="btn btn-primary">상세 보기</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+  // 모달 외부 클릭 시 닫기
+  document.getElementById('strategy-modal').addEventListener('click', (e) => {
+    if (e.target.classList.contains('modal-overlay')) {
+      closeModal();
+    }
+  });
+
+  // ESC 키로 닫기
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeModal();
+  });
+}
+
 function showStrategyInfo(strategyId) {
   if (!leversData) return;
 
   const strategy = leversData.strategies.find(s => s.id === strategyId);
   if (!strategy) return;
 
-  // 간단한 알림 또는 모달로 표시
-  alert(`${strategy.name} (${strategy.nameEn})\n\n${strategy.description}`);
+  const strategyClass = getStrategyClass(strategyId);
+  const modal = document.getElementById('strategy-modal');
+  const header = document.getElementById('modal-header');
+
+  // 헤더 색상 클래스 설정
+  header.className = 'modal-header ' + strategyClass;
+
+  // 콘텐츠 설정
+  document.getElementById('modal-title').textContent = `${strategy.id}. ${strategy.name}`;
+  document.getElementById('modal-subtitle').textContent = strategy.nameEn;
+  document.getElementById('modal-description').textContent = strategy.description;
+
+  // 예시 품목 렌더링
+  const examplesContainer = document.getElementById('modal-examples');
+  examplesContainer.innerHTML = strategy.exampleItems.map(item =>
+    `<span class="example-item">${item}</span>`
+  ).join('');
+
+  // 레버 목록 렌더링
+  const leversContainer = document.getElementById('modal-levers');
+  leversContainer.innerHTML = strategy.levers.map(lever => `
+    <li>
+      <span class="lever-num">${lever.id}</span>
+      <div class="lever-info">
+        <strong>${lever.name}</strong>
+        <span>${lever.description}</span>
+      </div>
+    </li>
+  `).join('');
+
+  // 모달 표시
+  modal.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  const modal = document.getElementById('strategy-modal');
+  if (modal) {
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+  }
 }
 
 // ===== 초기화 =====
