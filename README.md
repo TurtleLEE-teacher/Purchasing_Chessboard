@@ -1,5 +1,7 @@
 # 구매 체스보드 (Purchasing Chessboard) 실습 사이트
 
+> **사이트 바로가기**: [https://turtlelee-teacher.github.io/Purchasing_Chessboard/](https://turtlelee-teacher.github.io/Purchasing_Chessboard/)
+
 ## 프로젝트 소개
 
 **A.T. Kearney(현 Kearney)**가 개발한 **구매 체스보드(Purchasing Chessboard)** 프레임워크를 학습하는 인터랙티브 교육 플랫폼입니다.
