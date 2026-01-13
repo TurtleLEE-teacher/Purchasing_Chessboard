@@ -70,7 +70,47 @@
             <p id="strategy-description" class="mt-2" style="font-size: 0.95rem;">-</p>
           </div>
         </div>
+
+        <!-- Share/Save Buttons -->
+        <div class="share-section">
+          <p class="share-title">결과 저장 및 공유</p>
+          <div class="share-buttons">
+            <button class="share-btn" onclick="copyResultToClipboard()" title="텍스트로 복사">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              <span>복사</span>
+            </button>
+            <button class="share-btn" onclick="shareResultLink()" title="링크 공유">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+              </svg>
+              <span>링크 공유</span>
+            </button>
+            <button class="share-btn" onclick="printResult()" title="인쇄하기">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                <rect x="6" y="14" width="12" height="8"></rect>
+              </svg>
+              <span>인쇄</span>
+            </button>
+            <button class="share-btn" onclick="downloadResultAsImage()" title="이미지 저장">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              <span>이미지 저장</span>
+            </button>
+          </div>
+        </div>
       </div>
+
+      <!-- Toast Notification -->
+      <div id="toast" class="toast"></div>
 
       <!-- Chessboard Position -->
       <div class="card mb-3">
