@@ -284,7 +284,10 @@ function renderRecommendedLevers(strategy) {
         <div class="lever-methods">
           <h4>주요 방법</h4>
           <ul>
-            ${lever.methods.map(method => `<li>${method}</li>`).join('')}
+            ${lever.methods.map(method => {
+              const methodName = typeof method === 'object' ? method.name : method;
+              return `<li>${methodName}</li>`;
+            }).join('')}
           </ul>
         </div>
 
@@ -356,13 +359,15 @@ function render64MethodsChessboard() {
         const lever = strategy.levers[leverIndex];
 
         lever.methods.forEach((method, methodIndex) => {
+          const methodName = typeof method === 'object' ? method.name : method;
           cells.push({
             strategyId: strategy.id,
             strategyName: strategy.name,
             leverName: lever.name,
             leverId: lever.id,
-            method: method,
-            methodIndex: methodIndex + 1
+            leverIndex: leverIndex,
+            method: methodName,
+            methodIndex: methodIndex
           });
         });
       }
@@ -373,17 +378,21 @@ function render64MethodsChessboard() {
     <div class="method-cell strategy-${cell.strategyId}"
          data-strategy="${cell.strategyId}"
          data-lever="${cell.leverId}"
+         data-lever-index="${cell.leverIndex}"
+         data-method-index="${cell.methodIndex}"
          title="${cell.leverName}: ${cell.method}">
-      <span class="method-number">${cell.leverId}-${cell.methodIndex}</span>
+      <span class="method-number">${cell.leverId}-${cell.methodIndex + 1}</span>
       <span class="method-text">${truncateText(cell.method, 15)}</span>
     </div>
   `).join('');
 
-  // 셀 클릭 이벤트 추가
+  // 셀 클릭 이벤트 추가 - 개별 방법 모달 표시
   container.querySelectorAll('.method-cell').forEach(cell => {
     cell.addEventListener('click', () => {
+      const strategyId = parseInt(cell.dataset.strategy);
       const leverId = cell.dataset.lever;
-      showMethodDetail(leverId);
+      const methodIndex = parseInt(cell.dataset.methodIndex);
+      showSingleMethodDetail(strategyId, leverId, methodIndex);
     });
   });
 }
@@ -393,65 +402,78 @@ function truncateText(text, maxLength) {
   return text.substring(0, maxLength) + '...';
 }
 
-function showMethodDetail(leverId) {
+// 개별 방법 상세 모달 표시
+function showSingleMethodDetail(strategyId, leverId, methodIndex) {
   if (!leversData) return;
 
-  // 해당 레버 찾기
-  let targetLever = null;
-  let targetStrategy = null;
+  // 해당 전략, 레버, 방법 찾기
+  const strategy = leversData.strategies.find(s => s.id === strategyId);
+  if (!strategy) return;
 
-  for (const strategy of leversData.strategies) {
-    const lever = strategy.levers.find(l => l.id === leverId);
-    if (lever) {
-      targetLever = lever;
-      targetStrategy = strategy;
-      break;
-    }
-  }
+  const lever = strategy.levers.find(l => l.id === leverId);
+  if (!lever) return;
 
-  if (!targetLever) return;
+  const method = lever.methods[methodIndex];
+  if (!method) return;
 
   // 모달 생성 및 표시
-  createMethodModal(targetLever, targetStrategy);
+  createSingleMethodModal(method, lever, strategy, methodIndex);
 }
 
-function createMethodModal(lever, strategy) {
+function createSingleMethodModal(method, lever, strategy, methodIndex) {
   // 기존 모달 제거
   const existingModal = document.getElementById('method-detail-modal');
   if (existingModal) existingModal.remove();
 
   const strategyClass = getStrategyClass(strategy.id);
+  const methodName = typeof method === 'object' ? method.name : method;
+  const methodDesc = typeof method === 'object' ? method.description : '';
+  const methodNum = `${lever.id}-${methodIndex + 1}`;
 
   const modalHTML = `
     <div id="method-detail-modal" class="modal-overlay active">
       <div class="modal">
         <div class="modal-header ${strategyClass}">
           <button class="modal-close" onclick="closeMethodModal()">&times;</button>
-          <h3>${lever.name}</h3>
-          <p>${lever.nameEn}</p>
+          <span class="method-badge">${methodNum}</span>
+          <h3>${methodName}</h3>
+          <p>${lever.name} | ${strategy.name}</p>
         </div>
         <div class="modal-body">
-          <p style="margin-bottom: 15px;">${lever.detailedDescription}</p>
+          ${methodDesc ? `
+            <div class="method-description">
+              <h4>상세 설명</h4>
+              <p>${methodDesc}</p>
+            </div>
+          ` : ''}
 
-          <h4>4가지 세부 방법</h4>
-          <ol class="methods-list">
-            ${lever.methods.map((method, index) => `
-              <li><strong>${lever.id}-${index + 1}</strong> ${method}</li>
-            `).join('')}
-          </ol>
+          <div class="method-context">
+            <h4>소속 레버 정보</h4>
+            <div class="context-card">
+              <div class="context-header">
+                <strong>${lever.id}. ${lever.name}</strong>
+                <span>${lever.nameEn}</span>
+              </div>
+              <p>${lever.description}</p>
+            </div>
+          </div>
 
-          <div class="lever-case" style="margin-top: 20px;">
-            <h4>사례: ${lever.case.title}</h4>
-            <dl class="case-detail">
-              <dt>산업</dt>
-              <dd>${lever.case.industry}</dd>
-              <dt>상황</dt>
-              <dd>${lever.case.situation}</dd>
-              <dt>조치</dt>
-              <dd>${lever.case.action}</dd>
-              <dt>결과</dt>
-              <dd>${lever.case.result}</dd>
-            </dl>
+          <div class="method-siblings">
+            <h4>같은 레버의 다른 방법</h4>
+            <ul class="sibling-methods">
+              ${lever.methods.map((m, idx) => {
+                const mName = typeof m === 'object' ? m.name : m;
+                const isActive = idx === methodIndex;
+                return `
+                  <li class="${isActive ? 'active' : ''}"
+                      onclick="${isActive ? '' : `showSingleMethodDetail(${strategy.id}, '${lever.id}', ${idx})`}"
+                      style="${isActive ? '' : 'cursor: pointer;'}">
+                    <span class="sibling-num">${lever.id}-${idx + 1}</span>
+                    <span class="sibling-name">${mName}</span>
+                  </li>
+                `;
+              }).join('')}
+            </ul>
           </div>
         </div>
       </div>
@@ -486,10 +508,11 @@ function render64MethodsTable() {
       <table class="methods-table">
         <thead>
           <tr>
-            <th style="width: 15%;">전략</th>
-            <th style="width: 15%;">레버</th>
-            <th style="width: 10%;">번호</th>
-            <th>세부 방법</th>
+            <th style="width: 12%;">전략</th>
+            <th style="width: 12%;">레버</th>
+            <th style="width: 8%;">번호</th>
+            <th style="width: 20%;">세부 방법</th>
+            <th style="width: 48%;">설명</th>
           </tr>
         </thead>
         <tbody>
@@ -500,6 +523,9 @@ function render64MethodsTable() {
 
     strategy.levers.forEach((lever, leverIndex) => {
       lever.methods.forEach((method, methodIndex) => {
+        const methodName = typeof method === 'object' ? method.name : method;
+        const methodDesc = typeof method === 'object' ? method.description : '-';
+
         tableHTML += '<tr class="strategy-row-' + strategy.id + '">';
 
         // 전략 셀 (첫 번째 레버의 첫 번째 방법에만)
@@ -522,10 +548,11 @@ function render64MethodsTable() {
           `;
         }
 
-        // 방법 번호와 내용
+        // 방법 번호, 이름, 설명
         tableHTML += `
           <td class="method-num">${lever.id}-${methodIndex + 1}</td>
-          <td>${method}</td>
+          <td class="method-name-cell">${methodName}</td>
+          <td class="method-desc-cell">${methodDesc}</td>
         `;
 
         tableHTML += '</tr>';
@@ -565,7 +592,10 @@ function renderAllLevers() {
           <div class="lever-methods">
             <h4>주요 방법</h4>
             <ul>
-              ${lever.methods.map(method => `<li>${method}</li>`).join('')}
+              ${lever.methods.map(method => {
+                const methodName = typeof method === 'object' ? method.name : method;
+                return `<li>${methodName}</li>`;
+              }).join('')}
             </ul>
           </div>
 
