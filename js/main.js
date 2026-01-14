@@ -102,6 +102,11 @@ function renderQuestion() {
       const value = parseInt(this.dataset.value);
       answers[question.category][question.id] = value;
       sessionStorage.setItem('surveyAnswers', JSON.stringify(answers));
+
+      // 선택 후 자동으로 다음 질문으로 이동 (짧은 딜레이로 선택 확인 가능)
+      setTimeout(() => {
+        nextQuestion();
+      }, 300);
     });
   });
 
