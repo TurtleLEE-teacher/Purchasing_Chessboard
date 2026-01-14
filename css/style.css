@@ -1068,6 +1068,126 @@ p {
   color: var(--primary-color);
 }
 
+/* Single Method Modal Styles */
+.method-badge {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.method-description {
+  margin-bottom: 25px;
+}
+
+.method-description p {
+  color: var(--text-dark);
+  line-height: 1.7;
+  background: var(--light-bg);
+  padding: 15px;
+  border-radius: var(--radius);
+}
+
+.method-context {
+  margin-bottom: 25px;
+}
+
+.context-card {
+  background: var(--light-bg);
+  border-radius: var(--radius);
+  padding: 15px;
+}
+
+.context-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.context-header span {
+  color: var(--text-light);
+  font-size: 0.85rem;
+}
+
+.context-card p {
+  margin: 0;
+  color: var(--text-light);
+  font-size: 0.9rem;
+}
+
+.method-siblings {
+  margin-bottom: 10px;
+}
+
+.sibling-methods {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sibling-methods li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 15px;
+  border-bottom: 1px solid var(--border-color);
+  transition: var(--transition);
+}
+
+.sibling-methods li:last-child {
+  border-bottom: none;
+}
+
+.sibling-methods li:not(.active):hover {
+  background: var(--light-bg);
+}
+
+.sibling-methods li.active {
+  background: var(--secondary-color);
+  color: var(--white);
+  border-radius: var(--radius);
+  margin: 5px 0;
+}
+
+.sibling-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 24px;
+  background: var(--light-bg);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+.sibling-methods li.active .sibling-num {
+  background: rgba(255, 255, 255, 0.2);
+  color: var(--white);
+}
+
+.sibling-name {
+  flex: 1;
+  font-size: 0.9rem;
+}
+
+/* Method Table Cell Styles */
+.methods-table .method-name-cell {
+  font-weight: 500;
+  color: var(--primary-color);
+}
+
+.methods-table .method-desc-cell {
+  font-size: 0.85rem;
+  color: var(--text-light);
+  line-height: 1.5;
+}
+
 @media (max-width: 768px) {
   .chessboard-64 {
     grid-template-columns: repeat(4, 1fr);
