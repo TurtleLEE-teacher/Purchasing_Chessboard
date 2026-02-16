@@ -92,6 +92,7 @@ function renderQuestion() {
   `;
 
   // 옵션 클릭 이벤트
+  let autoAdvanceTimer = null;
   const options = container.querySelectorAll('.option-item');
   options.forEach(option => {
     option.addEventListener('click', function() {
@@ -104,7 +105,9 @@ function renderQuestion() {
       sessionStorage.setItem('surveyAnswers', JSON.stringify(answers));
 
       // 선택 후 자동으로 다음 질문으로 이동 (짧은 딜레이로 선택 확인 가능)
-      setTimeout(() => {
+      if (autoAdvanceTimer) clearTimeout(autoAdvanceTimer);
+      autoAdvanceTimer = setTimeout(() => {
+        autoAdvanceTimer = null;
         nextQuestion();
       }, 300);
     });
@@ -117,7 +120,7 @@ function updateProgress() {
   const questions = getAllQuestions();
   const progressBar = document.getElementById('progress-bar');
   if (progressBar) {
-    const progress = ((currentQuestionIndex) / questions.length) * 100;
+    const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
     progressBar.style.width = `${progress}%`;
   }
 
@@ -225,6 +228,8 @@ function determineStrategy(supplyScore, demandScore) {
 
 // ===== 결과 페이지 렌더링 =====
 function initResultPage() {
+  loadResultFromURL();
+
   const resultData = sessionStorage.getItem('surveyResult');
   if (!resultData) {
     window.location.href = 'survey.html';
@@ -967,19 +972,3 @@ function loadResultFromURL() {
   return false;
 }
 
-// 결과 페이지 초기화 시 URL 파라미터 확인
-const originalInitResultPage = typeof initResultPage !== 'undefined' ? initResultPage : null;
-initResultPage = function() {
-  loadResultFromURL();
-
-  const resultData = sessionStorage.getItem('surveyResult');
-  if (!resultData) {
-    window.location.href = 'survey.html';
-    return;
-  }
-
-  loadLeversData().then(() => {
-    const result = JSON.parse(resultData);
-    renderResult(result);
-  });
-}
