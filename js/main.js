@@ -430,47 +430,71 @@ function render64MethodsChessboard() {
   const container = document.getElementById('chessboard-64');
   if (!container || !leversData) return;
 
-  // 64개 방법을 8×8 그리드로 배열
-  // 배열: 전략1 레버1-2 (row1) → 전략1 레버3-4 (row2) → 전략2 레버1-2 (row3) → ...
+  // 전략 맵 생성
+  const strategyMap = {};
+  leversData.strategies.forEach(s => { strategyMap[s.id] = s; });
+
+  // 8×8 사분면 배치 (2×2 체스보드와 동일한 배열)
+  // 상단: 전략3 (좌, 수요력↑ 공급력↓) | 전략4 (우, 수요력↑ 공급력↑)
+  // 하단: 전략2 (좌, 수요력↓ 공급력↓) | 전략1 (우, 수요력↓ 공급력↑)
+  const quadrantRows = [
+    { left: 3, right: 4 },
+    { left: 2, right: 1 },
+  ];
+
   let cells = [];
 
-  leversData.strategies.forEach((strategy, strategyIndex) => {
-    // 각 전략당 2개의 행 (레버 1-2, 레버 3-4)
-    for (let rowOffset = 0; rowOffset < 2; rowOffset++) {
-      // 각 행에 2개의 레버 (각 레버당 4개 방법)
-      for (let leverOffset = 0; leverOffset < 2; leverOffset++) {
-        const leverIndex = rowOffset * 2 + leverOffset;
-        const lever = strategy.levers[leverIndex];
+  quadrantRows.forEach(({ left, right }) => {
+    const leftStrat = strategyMap[left];
+    const rightStrat = strategyMap[right];
 
-        lever.methods.forEach((method, methodIndex) => {
-          const methodName = typeof method === 'object' ? method.name : method;
-          cells.push({
-            strategyId: strategy.id,
-            strategyName: strategy.name,
-            leverName: lever.name,
-            leverId: lever.id,
-            leverIndex: leverIndex,
-            method: methodName,
-            methodIndex: methodIndex
-          });
+    for (let leverIdx = 0; leverIdx < 4; leverIdx++) {
+      const leftLever = leftStrat.levers[leverIdx];
+      const rightLever = rightStrat.levers[leverIdx];
+
+      leftLever.methods.forEach((method, methodIdx) => {
+        const methodName = typeof method === 'object' ? method.name : method;
+        cells.push({
+          strategyId: leftStrat.id,
+          leverName: leftLever.name,
+          leverId: leftLever.id,
+          method: methodName,
+          methodIndex: methodIdx
         });
-      }
+      });
+
+      rightLever.methods.forEach((method, methodIdx) => {
+        const methodName = typeof method === 'object' ? method.name : method;
+        cells.push({
+          strategyId: rightStrat.id,
+          leverName: rightLever.name,
+          leverId: rightLever.id,
+          method: methodName,
+          methodIndex: methodIdx
+        });
+      });
     }
   });
 
-  container.innerHTML = cells.map((cell, index) => `
-    <div class="method-cell strategy-${cell.strategyId}"
+  container.innerHTML = cells.map((cell, index) => {
+    const col = index % 8;
+    const row = Math.floor(index / 8);
+    const classes = [`method-cell`, `strategy-${cell.strategyId}`];
+    if (col === 3) classes.push('boundary-right');
+    if (row === 3) classes.push('boundary-bottom');
+
+    return `
+    <div class="${classes.join(' ')}"
          data-strategy="${cell.strategyId}"
          data-lever="${cell.leverId}"
-         data-lever-index="${cell.leverIndex}"
          data-method-index="${cell.methodIndex}"
          title="${cell.leverName}: ${cell.method}">
       <span class="method-number">${cell.leverId}-${cell.methodIndex + 1}</span>
-      <span class="method-text">${truncateText(cell.method, 15)}</span>
-    </div>
-  `).join('');
+      <span class="method-text">${truncateText(cell.method, 7)}</span>
+    </div>`;
+  }).join('');
 
-  // 셀 클릭 이벤트 추가 - 개별 방법 모달 표시
+  // 셀 클릭 이벤트 추가
   container.querySelectorAll('.method-cell').forEach(cell => {
     cell.addEventListener('click', () => {
       const strategyId = parseInt(cell.dataset.strategy);
@@ -483,7 +507,7 @@ function render64MethodsChessboard() {
 
 function truncateText(text, maxLength) {
   if (text.length <= maxLength) return text;
-  return text.substring(0, maxLength) + '...';
+  return text.substring(0, maxLength - 1) + '…';
 }
 
 // 개별 방법 상세 모달 표시
