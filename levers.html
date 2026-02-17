@@ -61,7 +61,19 @@
       <div id="strategy-1" class="tab-content active">
         <div class="card mb-3" style="border-left: 4px solid var(--accent-color);">
           <h2>1. 수요 성질 변경 (Change Nature of Demand)</h2>
-          <p><strong>공급력 높음 + 수요력 낮음</strong> | 독점 상황 탈피를 위한 기술적 접근</p>
+          <div class="power-levels">
+            <div class="power-level">
+              <span class="power-label">공급력</span>
+              <span class="power-meter"><span class="power-fill supply" style="width:75%"></span></span>
+              <span class="power-value high">높음</span>
+            </div>
+            <div class="power-level">
+              <span class="power-label">수요력</span>
+              <span class="power-meter"><span class="power-fill demand" style="width:25%"></span></span>
+              <span class="power-value low">낮음</span>
+            </div>
+          </div>
+          <p>독점 상황 탈피를 위한 기술적 접근</p>
           <p style="color: var(--text-light);">
             공급업체가 강한 협상력을 가진 상황에서, 기술적 변화나 사양 조정을 통해 독점을 탈피하고 대안을 확보하는 전략입니다.
           </p>
@@ -76,7 +88,19 @@
       <div id="strategy-2" class="tab-content">
         <div class="card mb-3" style="border-left: 4px solid var(--secondary-color);">
           <h2>2. 지출 관리 (Manage Spend)</h2>
-          <p><strong>공급력 낮음 + 수요력 낮음</strong> | 수요 통합 및 효율화</p>
+          <div class="power-levels">
+            <div class="power-level">
+              <span class="power-label">공급력</span>
+              <span class="power-meter"><span class="power-fill supply" style="width:25%"></span></span>
+              <span class="power-value low">낮음</span>
+            </div>
+            <div class="power-level">
+              <span class="power-label">수요력</span>
+              <span class="power-meter"><span class="power-fill demand" style="width:25%"></span></span>
+              <span class="power-value low">낮음</span>
+            </div>
+          </div>
+          <p>수요 통합 및 효율화</p>
           <p style="color: var(--text-light);">
             양측 모두 협상력이 약한 상황에서, 내부 수요를 최적화하고 구매력을 통합하여 효율성을 높이는 전략입니다.
           </p>
@@ -90,7 +114,19 @@
       <div id="strategy-3" class="tab-content">
         <div class="card mb-3" style="border-left: 4px solid var(--success-color);">
           <h2>3. 경쟁 활용 (Leverage Competition)</h2>
-          <p><strong>공급력 낮음 + 수요력 높음</strong> | 공급자 간 경쟁 유도</p>
+          <div class="power-levels">
+            <div class="power-level">
+              <span class="power-label">공급력</span>
+              <span class="power-meter"><span class="power-fill supply" style="width:25%"></span></span>
+              <span class="power-value low">낮음</span>
+            </div>
+            <div class="power-level">
+              <span class="power-label">수요력</span>
+              <span class="power-meter"><span class="power-fill demand" style="width:75%"></span></span>
+              <span class="power-value high">높음</span>
+            </div>
+          </div>
+          <p>공급자 간 경쟁 유도</p>
           <p style="color: var(--text-light);">
             구매자가 강한 협상력을 가진 상황에서, 공급업체 간 경쟁을 적극 활용하여 최적의 조건을 확보하는 전략입니다.
           </p>
@@ -104,7 +140,19 @@
       <div id="strategy-4" class="tab-content">
         <div class="card mb-3" style="border-left: 4px solid var(--purple-color);">
           <h2>4. 공동 이익 추구 (Seek Joint Advantage)</h2>
-          <p><strong>공급력 높음 + 수요력 높음</strong> | 파트너십 기반 가치 창출</p>
+          <div class="power-levels">
+            <div class="power-level">
+              <span class="power-label">공급력</span>
+              <span class="power-meter"><span class="power-fill supply" style="width:75%"></span></span>
+              <span class="power-value high">높음</span>
+            </div>
+            <div class="power-level">
+              <span class="power-label">수요력</span>
+              <span class="power-meter"><span class="power-fill demand" style="width:75%"></span></span>
+              <span class="power-value high">높음</span>
+            </div>
+          </div>
+          <p>파트너십 기반 가치 창출</p>
           <p style="color: var(--text-light);">
             양측 모두 중요한 파트너인 상황에서, 협력을 통해 함께 가치를 창출하고 Win-Win 관계를 구축하는 전략입니다.
           </p>
@@ -134,7 +182,10 @@
             <tr style="background: rgba(231, 76, 60, 0.1);">
               <td style="padding: 12px; border-bottom: 1px solid var(--border-color);" rowspan="4">
                 <strong>1. 수요 성질 변경</strong><br>
-                <span style="font-size: 0.85rem; color: var(--text-light);">공급력↑ 수요력↓</span>
+                <div class="power-arrows">
+                  <span class="arrow-badge supply-high">공급력 ↑</span>
+                  <span class="arrow-badge demand-low">수요력 ↓</span>
+                </div>
               </td>
               <td style="padding: 12px; border-bottom: 1px solid var(--border-color);">위험 관리</td>
               <td style="padding: 12px; border-bottom: 1px solid var(--border-color);">대체 공급선, 안전재고</td>
@@ -156,7 +207,10 @@
             <tr style="background: rgba(52, 152, 219, 0.1);">
               <td style="padding: 12px; border-bottom: 1px solid var(--border-color);" rowspan="4">
                 <strong>2. 지출 관리</strong><br>
-                <span style="font-size: 0.85rem; color: var(--text-light);">공급력↓ 수요력↓</span>
+                <div class="power-arrows">
+                  <span class="arrow-badge supply-low">공급력 ↓</span>
+                  <span class="arrow-badge demand-low">수요력 ↓</span>
+                </div>
               </td>
               <td style="padding: 12px; border-bottom: 1px solid var(--border-color);">수요 관리</td>
               <td style="padding: 12px; border-bottom: 1px solid var(--border-color);">수요 최적화, 낭비 제거</td>
@@ -178,7 +232,10 @@
             <tr style="background: rgba(46, 204, 113, 0.1);">
               <td style="padding: 12px; border-bottom: 1px solid var(--border-color);" rowspan="4">
                 <strong>3. 경쟁 활용</strong><br>
-                <span style="font-size: 0.85rem; color: var(--text-light);">공급력↓ 수요력↑</span>
+                <div class="power-arrows">
+                  <span class="arrow-badge supply-low">공급력 ↓</span>
+                  <span class="arrow-badge demand-high">수요력 ↑</span>
+                </div>
               </td>
               <td style="padding: 12px; border-bottom: 1px solid var(--border-color);">공급 기반 확대</td>
               <td style="padding: 12px; border-bottom: 1px solid var(--border-color);">글로벌 소싱, 신규 업체 발굴</td>
@@ -200,7 +257,10 @@
             <tr style="background: rgba(155, 89, 182, 0.1);">
               <td style="padding: 12px; border-bottom: 1px solid var(--border-color);" rowspan="4">
                 <strong>4. 공동 이익 추구</strong><br>
-                <span style="font-size: 0.85rem; color: var(--text-light);">공급력↑ 수요력↑</span>
+                <div class="power-arrows">
+                  <span class="arrow-badge supply-high">공급력 ↑</span>
+                  <span class="arrow-badge demand-high">수요력 ↑</span>
+                </div>
               </td>
               <td style="padding: 12px; border-bottom: 1px solid var(--border-color);">통합 운영 계획</td>
               <td style="padding: 12px; border-bottom: 1px solid var(--border-color);">VMI, JIT, S&OP</td>
@@ -232,9 +292,15 @@
       </p>
 
       <!-- 8x8 Chessboard Grid -->
-      <div class="chessboard-64" id="chessboard-64">
-        <!-- JavaScript로 동적 렌더링 -->
-        <p class="text-center" style="color: var(--text-light); grid-column: 1 / -1;">로딩 중...</p>
+      <div class="chessboard-64-wrapper">
+        <div class="chessboard-64-yaxis">수요력 ↑</div>
+        <div class="chessboard-64-inner">
+          <div class="chessboard-64" id="chessboard-64">
+            <!-- JavaScript로 동적 렌더링 -->
+            <p class="text-center" style="color: var(--text-light); grid-column: 1 / -1;">로딩 중...</p>
+          </div>
+          <div class="chessboard-64-xaxis">공급력 →</div>
+        </div>
       </div>
 
       <!-- Legend -->
