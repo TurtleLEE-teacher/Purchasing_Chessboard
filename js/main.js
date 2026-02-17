@@ -823,8 +823,59 @@ function closeModal() {
   }
 }
 
+// ===== 모바일 메뉴 =====
+function initMobileMenu() {
+  const toggle = document.querySelector('.nav-toggle');
+  const nav = document.querySelector('.nav');
+  const overlay = document.querySelector('.nav-overlay');
+  if (!toggle || !nav) return;
+
+  function openMenu() {
+    toggle.classList.add('active');
+    toggle.setAttribute('aria-expanded', 'true');
+    nav.classList.add('open');
+    if (overlay) overlay.classList.add('show');
+    document.body.classList.add('menu-open');
+  }
+
+  function closeMenu() {
+    toggle.classList.remove('active');
+    toggle.setAttribute('aria-expanded', 'false');
+    nav.classList.remove('open');
+    if (overlay) overlay.classList.remove('show');
+    document.body.classList.remove('menu-open');
+  }
+
+  toggle.addEventListener('click', () => {
+    if (nav.classList.contains('open')) {
+      closeMenu();
+    } else {
+      openMenu();
+    }
+  });
+
+  if (overlay) {
+    overlay.addEventListener('click', closeMenu);
+  }
+
+  // 네비게이션 링크 클릭 시 메뉴 닫기
+  nav.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', closeMenu);
+  });
+
+  // ESC 키로 닫기
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && nav.classList.contains('open')) {
+      closeMenu();
+    }
+  });
+}
+
 // ===== 초기화 =====
 document.addEventListener('DOMContentLoaded', () => {
+  // 모바일 메뉴 초기화 (모든 페이지 공통)
+  initMobileMenu();
+
   // 페이지별 초기화
   const page = document.body.dataset.page;
 
