@@ -420,7 +420,6 @@ function initLeversPage() {
       renderAllLevers();
       initTabs();
       render64MethodsChessboard();
-      render64MethodsTable();
     }
   });
 }
@@ -490,7 +489,7 @@ function render64MethodsChessboard() {
          data-method-index="${cell.methodIndex}"
          title="${cell.leverName}: ${cell.method}">
       <span class="method-number">${cell.leverId}-${cell.methodIndex + 1}</span>
-      <span class="method-text">${truncateText(cell.method, 7)}</span>
+      <span class="method-text">${cell.method.replace(/\s*[\(（].*?[\)）]/g, '')}</span>
     </div>`;
   }).join('');
 
