@@ -11,6 +11,11 @@ let answers = {
   demandPower: {}
 };
 
+// Phase 2 설문 변수
+let surveyPhase = 1;
+let phase2Answers = {};
+let determinedStrategy = null;
+
 // ===== 데이터 로드 =====
 async function loadLeversData() {
   try {
@@ -32,23 +37,56 @@ function initSurvey() {
 
   currentQuestionIndex = 0;
   answers = { supplyPower: {}, demandPower: {} };
+  surveyPhase = 1;
+  phase2Answers = {};
+  determinedStrategy = null;
+
+  // 저장된 Phase 2 상태 복원
+  const savedPhase = sessionStorage.getItem('surveyPhase');
+  if (savedPhase) {
+    surveyPhase = parseInt(savedPhase);
+  }
+
+  const savedPhase2 = sessionStorage.getItem('phase2Answers');
+  if (savedPhase2) {
+    phase2Answers = JSON.parse(savedPhase2);
+  }
+
+  const savedStrategy = sessionStorage.getItem('determinedStrategy');
+  if (savedStrategy) {
+    determinedStrategy = parseInt(savedStrategy);
+  }
 
   // 저장된 답변이 있으면 불러오기
   const savedAnswers = sessionStorage.getItem('surveyAnswers');
   if (savedAnswers) {
     answers = JSON.parse(savedAnswers);
 
-    // 마지막으로 응답한 질문 다음 위치로 복원
-    const questions = getAllQuestions();
-    for (let i = 0; i < questions.length; i++) {
-      const q = questions[i];
-      if (!answers[q.category][q.id]) {
-        currentQuestionIndex = i;
-        break;
+    if (surveyPhase === 1) {
+      // Phase 1: 마지막으로 응답한 질문 다음 위치로 복원
+      const questions = getAllQuestions();
+      for (let i = 0; i < questions.length; i++) {
+        const q = questions[i];
+        if (!answers[q.category][q.id]) {
+          currentQuestionIndex = i;
+          break;
+        }
+        if (i === questions.length - 1) {
+          currentQuestionIndex = i;
+        }
       }
-      // 모든 질문에 답변했으면 마지막 질문에 위치
-      if (i === questions.length - 1) {
-        currentQuestionIndex = i;
+    } else if (surveyPhase === 2) {
+      // Phase 2: 마지막으로 응답한 질문 다음 위치로 복원
+      const questions = getAllQuestions();
+      for (let i = 0; i < questions.length; i++) {
+        const q = questions[i];
+        if (!phase2Answers[q.id]) {
+          currentQuestionIndex = i;
+          break;
+        }
+        if (i === questions.length - 1) {
+          currentQuestionIndex = i;
+        }
       }
     }
   }
@@ -60,6 +98,18 @@ function initSurvey() {
 function getAllQuestions() {
   if (!leversData) return [];
 
+  if (surveyPhase === 2 && determinedStrategy) {
+    // Phase 2: 전략별 맞춤 질문 반환
+    const p2Questions = leversData.phase2Questions[String(determinedStrategy)];
+    if (!p2Questions) return [];
+    return p2Questions.map(q => ({
+      ...q,
+      category: 'phase2',
+      categoryName: '레버 심층 평가'
+    }));
+  }
+
+  // Phase 1: 기존 공급력/수요력 질문
   const supplyQuestions = leversData.surveyQuestions.supplyPower.map(q => ({
     ...q,
     category: 'supplyPower',
@@ -86,11 +136,19 @@ function renderQuestion() {
   const container = document.getElementById('question-container');
   if (!container) return;
 
-  const savedAnswer = answers[question.category][question.id];
+  // Phase에 따라 저장된 답변 가져오기
+  const savedAnswer = surveyPhase === 2
+    ? phase2Answers[question.id]
+    : answers[question.category][question.id];
+
+  // Phase 표시 배지
+  const phaseBadge = surveyPhase === 2
+    ? `<span class="phase-badge phase2">2단계</span> `
+    : `<span class="phase-badge phase1">1단계</span> `;
 
   container.innerHTML = `
     <div class="survey-question">
-      <span class="question-number">${question.categoryName} - ${currentQuestionIndex + 1}/${questions.length}</span>
+      <span class="question-number">${phaseBadge}${question.categoryName} - ${currentQuestionIndex + 1}/${questions.length}</span>
       <h3 class="question-text">${question.question}</h3>
       <p class="question-description">${question.description}</p>
       <div class="options-list">
@@ -115,8 +173,14 @@ function renderQuestion() {
       this.querySelector('input').checked = true;
 
       const value = parseInt(this.dataset.value);
-      answers[question.category][question.id] = value;
-      sessionStorage.setItem('surveyAnswers', JSON.stringify(answers));
+
+      if (surveyPhase === 2) {
+        phase2Answers[question.id] = value;
+        sessionStorage.setItem('phase2Answers', JSON.stringify(phase2Answers));
+      } else {
+        answers[question.category][question.id] = value;
+        sessionStorage.setItem('surveyAnswers', JSON.stringify(answers));
+      }
 
       // 선택 후 자동으로 다음 질문으로 이동 (짧은 딜레이로 선택 확인 가능)
       if (autoAdvanceTimer) clearTimeout(autoAdvanceTimer);
@@ -133,14 +197,30 @@ function renderQuestion() {
 function updateProgress() {
   const questions = getAllQuestions();
   const progressBar = document.getElementById('progress-bar');
-  if (progressBar) {
-    const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
-    progressBar.style.width = `${progress}%`;
-  }
 
-  const progressText = document.getElementById('progress-text');
-  if (progressText) {
-    progressText.textContent = `${currentQuestionIndex + 1} / ${questions.length}`;
+  if (surveyPhase === 2) {
+    // Phase 2: 전체 16문항 중 12 + 현재 위치
+    const totalAll = 12 + questions.length;
+    const currentAll = 12 + currentQuestionIndex + 1;
+    if (progressBar) {
+      progressBar.style.width = `${(currentAll / totalAll) * 100}%`;
+      progressBar.style.background = 'linear-gradient(90deg, var(--secondary-color), var(--purple-color))';
+    }
+    const progressText = document.getElementById('progress-text');
+    if (progressText) {
+      progressText.textContent = `2단계: ${currentQuestionIndex + 1} / ${questions.length} (전체 ${currentAll} / ${totalAll})`;
+    }
+  } else {
+    // Phase 1
+    if (progressBar) {
+      const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+      progressBar.style.width = `${progress}%`;
+      progressBar.style.background = '';
+    }
+    const progressText = document.getElementById('progress-text');
+    if (progressText) {
+      progressText.textContent = `1단계: ${currentQuestionIndex + 1} / ${questions.length}`;
+    }
   }
 }
 
@@ -163,8 +243,12 @@ function nextQuestion() {
   const questions = getAllQuestions();
   const question = questions[currentQuestionIndex];
 
-  // 현재 질문에 답변했는지 확인
-  if (!answers[question.category][question.id]) {
+  // 현재 질문에 답변했는지 확인 (Phase에 따라 다른 저장소)
+  const hasAnswer = surveyPhase === 2
+    ? phase2Answers[question.id]
+    : answers[question.category]?.[question.id];
+
+  if (!hasAnswer) {
     alert('답변을 선택해주세요.');
     return;
   }
@@ -187,8 +271,88 @@ function prevQuestion() {
 }
 
 function finishSurvey() {
-  // 결과 계산 후 결과 페이지로 이동
+  if (surveyPhase === 1) {
+    // Phase 1 완료 → 전략 결정 후 전환 화면 표시
+    const result = calculateResult();
+    determinedStrategy = result.strategy;
+    sessionStorage.setItem('determinedStrategy', String(determinedStrategy));
+    showPhaseTransition(result);
+  } else {
+    // Phase 2 완료 → 최종 결과 계산 후 결과 페이지로 이동
+    const result = calculateFinalResult();
+    sessionStorage.setItem('surveyResult', JSON.stringify(result));
+    window.location.href = 'result.html';
+  }
+}
+
+function showPhaseTransition(result) {
+  const container = document.getElementById('question-container');
+  if (!container) return;
+
+  const strategy = leversData.strategies.find(s => s.id === result.strategy);
+  const strategyClass = getStrategyClass(result.strategy);
+
+  // 네비게이션 버튼 숨기기
+  const navEl = document.querySelector('.survey-navigation');
+  if (navEl) navEl.style.display = 'none';
+
+  container.innerHTML = `
+    <div class="phase-transition-card">
+      <div class="phase-transition-icon">&#10003;</div>
+      <h2>1단계 완료!</h2>
+      <p class="phase-transition-subtitle">구매 상황 분석이 완료되었습니다.</p>
+
+      <div class="phase-transition-result">
+        <div class="phase-transition-scores">
+          <div class="phase-score-item">
+            <span class="phase-score-label">공급력</span>
+            <span class="phase-score-value">${Math.round(result.supplyPercent)}%</span>
+          </div>
+          <div class="phase-score-item">
+            <span class="phase-score-label">수요력</span>
+            <span class="phase-score-value">${Math.round(result.demandPercent)}%</span>
+          </div>
+        </div>
+        <div class="phase-transition-strategy ${strategyClass}">
+          <p class="strategy-label">추천 전략</p>
+          <h3>${strategy.name}</h3>
+          <p class="strategy-en">${strategy.nameEn}</p>
+        </div>
+      </div>
+
+      <div class="phase-transition-next">
+        <p>이제 <strong>2단계 맞춤 질문 4개</strong>에 답변하면<br>
+        4가지 레버 중 우선순위를 파악할 수 있습니다.</p>
+        <button class="btn btn-primary btn-large" onclick="startPhase2()">
+          2단계 시작하기
+        </button>
+        <button class="btn btn-secondary btn-small mt-1" onclick="skipPhase2()">
+          건너뛰고 결과 보기
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function startPhase2() {
+  surveyPhase = 2;
+  currentQuestionIndex = 0;
+  phase2Answers = {};
+  sessionStorage.setItem('surveyPhase', '2');
+  sessionStorage.setItem('phase2Answers', JSON.stringify(phase2Answers));
+
+  // 네비게이션 버튼 다시 표시
+  const navEl = document.querySelector('.survey-navigation');
+  if (navEl) navEl.style.display = '';
+
+  renderQuestion();
+  updateProgress();
+}
+
+function skipPhase2() {
+  // Phase 2 없이 기본 결과로 이동
   const result = calculateResult();
+  result.leverScores = null; // Phase 2 미실시 표시
   sessionStorage.setItem('surveyResult', JSON.stringify(result));
   window.location.href = 'result.html';
 }
@@ -240,6 +404,34 @@ function determineStrategy(supplyScore, demandScore) {
   }
 }
 
+// ===== Phase 2 결과 계산 =====
+function calculateFinalResult() {
+  // Phase 1 기본 점수
+  const baseResult = calculateResult();
+
+  // Phase 2 레버별 점수 계산
+  const strategy = leversData.strategies.find(s => s.id === determinedStrategy);
+  if (!strategy) return baseResult;
+
+  const p2Questions = leversData.phase2Questions[String(determinedStrategy)];
+  if (!p2Questions) return baseResult;
+
+  const leverScores = {};
+  p2Questions.forEach(q => {
+    const answer = phase2Answers[q.id];
+    if (answer !== undefined) {
+      leverScores[q.leverTarget] = {
+        score: answer,
+        maxScore: 4
+      };
+    }
+  });
+
+  baseResult.leverScores = leverScores;
+  baseResult.phase2Completed = true;
+  return baseResult;
+}
+
 // ===== 결과 페이지 렌더링 =====
 function initResultPage() {
   loadResultFromURL();
@@ -279,8 +471,13 @@ function renderResult(result) {
     if (strategyNameEn) strategyNameEn.textContent = strategy.nameEn;
     if (strategyDesc) strategyDesc.textContent = strategy.description;
 
-    // 추천 레버 렌더링
-    renderRecommendedLevers(strategy);
+    // 추천 레버 렌더링 (Phase 2 점수가 있으면 우선순위 표시)
+    renderRecommendedLevers(strategy, result.leverScores);
+  }
+
+  // Phase 2 완료 여부 표시
+  if (result.phase2Completed && result.leverScores) {
+    renderPhase2Summary(strategy, result.leverScores);
   }
 
   // 체스보드 위치 표시
@@ -290,18 +487,47 @@ function renderResult(result) {
   renderAdjacentStrategyNote(result);
 }
 
-function renderRecommendedLevers(strategy) {
+function renderRecommendedLevers(strategy, leverScores) {
   const container = document.getElementById('recommended-levers');
   if (!container) return;
 
   const strategyClass = getStrategyClass(strategy.id);
 
-  container.innerHTML = strategy.levers.map(lever => `
+  // Phase 2 점수가 있으면 점수 기준으로 정렬
+  let levers = [...strategy.levers];
+  if (leverScores && Object.keys(leverScores).length > 0) {
+    levers.sort((a, b) => {
+      const scoreA = leverScores[a.id]?.score || 0;
+      const scoreB = leverScores[b.id]?.score || 0;
+      return scoreB - scoreA;
+    });
+  }
+
+  container.innerHTML = levers.map((lever, index) => {
+    // 레버 우선순위 배지 생성
+    let relevanceBadge = '';
+    if (leverScores && Object.keys(leverScores).length > 0) {
+      const score = leverScores[lever.id]?.score || 0;
+      let badgeClass, badgeText;
+      if (score >= 4) {
+        badgeClass = 'relevance-top';
+        badgeText = '최우선';
+      } else if (score >= 3) {
+        badgeClass = 'relevance-high';
+        badgeText = '권장';
+      } else {
+        badgeClass = 'relevance-normal';
+        badgeText = '참고';
+      }
+      relevanceBadge = `<span class="lever-relevance ${badgeClass}">${badgeText}</span>`;
+    }
+
+    return `
     <div class="lever-card">
       <div class="lever-card-header ${strategyClass}">
         <span class="lever-id">${lever.id}</span>
         <div>
-          <h4>${lever.name}</h4>
+          <h4>${lever.name} ${relevanceBadge}</h4>
           <p>${lever.nameEn}</p>
         </div>
       </div>
@@ -333,7 +559,7 @@ function renderRecommendedLevers(strategy) {
         </div>
       </div>
     </div>
-  `).join('');
+  `}).join('');
 }
 
 function getStrategyClass(strategyId) {
@@ -411,6 +637,44 @@ function renderAdjacentStrategyNote(result) {
       </p>
     </div>
   `;
+}
+
+// ===== Phase 2 결과 요약 표시 =====
+function renderPhase2Summary(strategy, leverScores) {
+  const summaryContainer = document.querySelector('.result-summary');
+  if (!summaryContainer) return;
+
+  // 레버를 점수 순으로 정렬
+  const sortedLevers = [...strategy.levers].sort((a, b) => {
+    const scoreA = leverScores[a.id]?.score || 0;
+    const scoreB = leverScores[b.id]?.score || 0;
+    return scoreB - scoreA;
+  });
+
+  const html = `
+    <div class="phase2-summary">
+      <h4>레버 우선순위 (2단계 분석 결과)</h4>
+      <div class="lever-priority-list">
+        ${sortedLevers.map((lever, idx) => {
+          const score = leverScores[lever.id]?.score || 0;
+          let badgeClass, badgeText;
+          if (score >= 4) { badgeClass = 'relevance-top'; badgeText = '최우선'; }
+          else if (score >= 3) { badgeClass = 'relevance-high'; badgeText = '권장'; }
+          else { badgeClass = 'relevance-normal'; badgeText = '참고'; }
+
+          return `
+            <div class="lever-priority-item">
+              <span class="lever-priority-rank">${idx + 1}</span>
+              <span class="lever-priority-name">${lever.name}</span>
+              <span class="lever-relevance ${badgeClass}">${badgeText}</span>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    </div>
+  `;
+
+  summaryContainer.insertAdjacentHTML('beforeend', html);
 }
 
 // ===== 레버 페이지 =====
@@ -921,9 +1185,18 @@ document.addEventListener('DOMContentLoaded', () => {
 function resetSurvey() {
   sessionStorage.removeItem('surveyAnswers');
   sessionStorage.removeItem('surveyResult');
+  sessionStorage.removeItem('surveyPhase');
+  sessionStorage.removeItem('phase2Answers');
+  sessionStorage.removeItem('determinedStrategy');
   currentQuestionIndex = 0;
   answers = { supplyPower: {}, demandPower: {} };
+  surveyPhase = 1;
+  phase2Answers = {};
+  determinedStrategy = null;
   if (document.body.dataset.page === 'survey') {
+    // 네비게이션 버튼 다시 표시 (Phase 전환 후 숨겨졌을 수 있음)
+    const navEl = document.querySelector('.survey-navigation');
+    if (navEl) navEl.style.display = '';
     initSurvey();
   } else {
     window.location.href = 'survey.html';
@@ -961,9 +1234,25 @@ function getResultText() {
     text += `${strategy.description}\n\n`;
 
     text += `[추천 레버]\n`;
-    strategy.levers.forEach(lever => {
-      text += `- ${lever.name}: ${lever.description}\n`;
-    });
+    let levers = [...strategy.levers];
+
+    // Phase 2 점수가 있으면 정렬 및 우선순위 표시
+    if (result.leverScores && Object.keys(result.leverScores).length > 0) {
+      levers.sort((a, b) => {
+        const scoreA = result.leverScores[a.id]?.score || 0;
+        const scoreB = result.leverScores[b.id]?.score || 0;
+        return scoreB - scoreA;
+      });
+      levers.forEach(lever => {
+        const score = result.leverScores[lever.id]?.score || 0;
+        const rank = score >= 4 ? '★★★ 최우선' : score >= 3 ? '★★ 권장' : '★ 참고';
+        text += `- [${rank}] ${lever.name}: ${lever.description}\n`;
+      });
+    } else {
+      levers.forEach(lever => {
+        text += `- ${lever.name}: ${lever.description}\n`;
+      });
+    }
   }
 
   text += `\n===================================\n`;

@@ -1778,6 +1778,228 @@ p {
   padding: 6px 0;
 }
 
+/* ===== Phase Transition Card ===== */
+.phase-transition-card {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  padding: 32px 24px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-color);
+  text-align: center;
+  animation: fadeIn 0.4s ease;
+}
+
+@media (min-width: 640px) {
+  .phase-transition-card { padding: 48px 36px; }
+}
+
+.phase-transition-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--success-color);
+  color: var(--white);
+  font-size: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+}
+
+.phase-transition-card h2 {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  margin-bottom: 8px;
+}
+
+.phase-transition-subtitle {
+  color: var(--text-light);
+  margin-bottom: 24px;
+}
+
+.phase-transition-result {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+@media (min-width: 480px) {
+  .phase-transition-result {
+    flex-direction: row;
+    align-items: stretch;
+  }
+}
+
+.phase-transition-scores {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex: 1;
+}
+
+.phase-score-item {
+  background: var(--light-bg);
+  border-radius: var(--radius);
+  padding: 12px 20px;
+  text-align: center;
+  flex: 1;
+}
+
+.phase-score-label {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-light);
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.phase-score-value {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+.phase-transition-strategy {
+  padding: 16px 20px;
+  border-radius: var(--radius-lg);
+  color: var(--white);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.phase-transition-strategy.demand-change { background: var(--accent-color); }
+.phase-transition-strategy.manage-spend { background: var(--secondary-color); }
+.phase-transition-strategy.leverage-competition { background: var(--success-color); }
+.phase-transition-strategy.joint-advantage { background: var(--purple-color); }
+
+.phase-transition-strategy .strategy-label {
+  font-size: 0.8rem;
+  opacity: 0.85;
+  margin-bottom: 4px;
+}
+
+.phase-transition-strategy h3 {
+  margin-bottom: 2px;
+  font-size: 1.25rem;
+}
+
+.phase-transition-strategy .strategy-en {
+  font-size: 0.85rem;
+  opacity: 0.8;
+  margin-bottom: 0;
+}
+
+.phase-transition-next {
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color);
+}
+
+.phase-transition-next p {
+  color: var(--text-light);
+  margin-bottom: 16px;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+/* ===== Phase Badges (survey question) ===== */
+.phase-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+
+.phase-badge.phase1 {
+  background: rgba(59, 130, 246, 0.12);
+  color: var(--secondary-color);
+}
+
+.phase-badge.phase2 {
+  background: rgba(168, 85, 247, 0.12);
+  color: var(--purple-color);
+}
+
+/* ===== Lever Relevance Badges ===== */
+.lever-relevance {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  vertical-align: middle;
+  margin-left: 8px;
+}
+
+.lever-relevance.relevance-top {
+  background: rgba(239, 68, 68, 0.12);
+  color: var(--accent-color);
+}
+
+.lever-relevance.relevance-high {
+  background: rgba(59, 130, 246, 0.12);
+  color: var(--secondary-color);
+}
+
+.lever-relevance.relevance-normal {
+  background: var(--light-bg);
+  color: var(--text-light);
+}
+
+/* ===== Phase 2 Summary in Result ===== */
+.phase2-summary {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color);
+}
+
+.phase2-summary h4 {
+  font-size: 0.95rem;
+  margin-bottom: 12px;
+  text-align: center;
+  color: var(--purple-color);
+}
+
+.lever-priority-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.lever-priority-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--light-bg);
+  border-radius: var(--radius);
+}
+
+.lever-priority-rank {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.lever-priority-name {
+  flex: 1;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
 /* ===== Print Styles ===== */
 @media print {
   .header, .footer, .btn, .survey-navigation, .share-section, .nav-toggle {
