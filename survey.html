@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>구매 상황 분석 | 구매 체스보드</title>
-  <meta name="description" content="12개 질문을 통해 귀사의 구매 상황을 분석합니다.">
+  <meta name="description" content="16개 질문(1단계 12문항 + 2단계 4문항)을 통해 귀사의 구매 전략과 레버 우선순위를 분석합니다.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
@@ -35,7 +35,7 @@
       <div class="survey-container">
         <h1 class="text-center mb-2">구매 상황 분석</h1>
         <p class="text-center mb-3" style="color: var(--text-light);">
-          12개 질문에 답변하여 최적의 구매 전략을 찾아보세요. (약 5분 소요)
+          1단계 12문항 + 2단계 맞춤 4문항으로 최적의 구매 전략과 레버를 찾아보세요.
         </p>
 
         <!-- Progress Bar -->
@@ -79,30 +79,39 @@
     <div class="container">
       <div style="max-width: 700px; margin: 0 auto;">
         <h3 class="text-center mb-2">설문 구성 안내</h3>
-        <div class="card-grid" style="grid-template-columns: 1fr 1fr;">
-          <div class="card" style="border-left: 4px solid var(--accent-color);">
-            <h4>공급력(Supply Power) 평가</h4>
-            <p style="color: var(--text-light); margin-bottom: 10px;">6문항</p>
-            <ul style="font-size: 0.9rem; color: var(--text-light);">
-              <li>• 대체 공급업체 존재 여부</li>
-              <li>• 공급업체 전환 비용</li>
-              <li>• 기술적 독점성</li>
-              <li>• 시장 내 공급업체 수</li>
-              <li>• 공급업체 협상 태도</li>
-              <li>• 원자재/부품 희소성</li>
-            </ul>
+        <div class="card-grid" style="grid-template-columns: 1fr;">
+          <div class="card" style="border-left: 4px solid var(--secondary-color);">
+            <h4><span class="phase-badge phase1">1단계</span> 구매 상황 분석 (12문항)</h4>
+            <p style="color: var(--text-light); margin-bottom: 10px;">공급력·수요력을 평가하여 4가지 전략 중 최적 전략을 결정합니다.</p>
+            <div class="card-grid" style="grid-template-columns: 1fr 1fr; gap: 12px;">
+              <div>
+                <p style="font-weight: 600; font-size: 0.9rem; margin-bottom: 6px; color: var(--accent-color);">공급력 평가 6문항</p>
+                <ul style="font-size: 0.85rem; color: var(--text-light);">
+                  <li>• 대체 공급업체 존재 여부</li>
+                  <li>• 공급업체 전환 비용</li>
+                  <li>• 기술적 독점성</li>
+                  <li>• 시장 내 공급업체 수</li>
+                  <li>• 공급업체 협상 태도</li>
+                  <li>• 원자재/부품 희소성</li>
+                </ul>
+              </div>
+              <div>
+                <p style="font-weight: 600; font-size: 0.9rem; margin-bottom: 6px; color: var(--success-color);">수요력 평가 6문항</p>
+                <ul style="font-size: 0.85rem; color: var(--text-light);">
+                  <li>• 구매 물량 규모</li>
+                  <li>• 공급업체 매출 내 비중</li>
+                  <li>• 시장 정보력과 전문성</li>
+                  <li>• 장기 계약 가능성</li>
+                  <li>• 대량 구매 능력</li>
+                  <li>• 시장 내 구매자 지위</li>
+                </ul>
+              </div>
+            </div>
           </div>
-          <div class="card" style="border-left: 4px solid var(--success-color);">
-            <h4>수요력(Demand Power) 평가</h4>
-            <p style="color: var(--text-light); margin-bottom: 10px;">6문항</p>
-            <ul style="font-size: 0.9rem; color: var(--text-light);">
-              <li>• 구매 물량 규모</li>
-              <li>• 공급업체 매출 내 비중</li>
-              <li>• 시장 정보력과 전문성</li>
-              <li>• 장기 계약 가능성</li>
-              <li>• 대량 구매 능력</li>
-              <li>• 시장 내 구매자 지위</li>
-            </ul>
+          <div class="card" style="border-left: 4px solid var(--purple-color);">
+            <h4><span class="phase-badge phase2">2단계</span> 레버 심층 평가 (4문항)</h4>
+            <p style="color: var(--text-light); margin-bottom: 0;">1단계에서 결정된 전략에 맞춰 4가지 레버별 맞춤 질문으로 우선순위를 파악합니다.<br>
+            결과에서 <span class="lever-relevance relevance-top">최우선</span> <span class="lever-relevance relevance-high">권장</span> <span class="lever-relevance relevance-normal">참고</span> 등급으로 레버 우선순위가 표시됩니다.</p>
           </div>
         </div>
       </div>
