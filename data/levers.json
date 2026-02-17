@@ -316,10 +316,10 @@
       "levers": [
         {
           "id": "3-1",
-          "name": "글로벌화",
-          "nameEn": "Globalization",
-          "description": "글로벌 공급선 확대",
-          "detailedDescription": "전 세계적으로 공급업체를 탐색하여 최적의 품질, 가격, 서비스를 제공하는 공급선을 확보합니다.",
+          "name": "공급 기반 확대",
+          "nameEn": "Extension of Supply Base",
+          "description": "글로벌 소싱 등 공급선 확대",
+          "detailedDescription": "기존 공급업체 풀을 넘어 글로벌 소싱, 신규 업체 발굴 등을 통해 공급 기반을 확대하고 경쟁을 유도합니다.",
           "methods": [
             {
               "name": "저비용 국가 소싱",
@@ -398,8 +398,8 @@
               "description": "시장가격, 원가 분석, 경쟁 상황 등을 종합하여 달성해야 할 목표원가를 설정합니다. 이를 협상의 기준점으로 활용합니다."
             },
             {
-              "name": "Open-book 협상",
-              "description": "공급업체와 원가 정보를 투명하게 공유하는 협상 방식입니다. 실제 원가를 기반으로 적정 마진을 합의하여 Win-Win을 추구합니다."
+              "name": "TCO(총소유비용) 기반 가격 협상",
+              "description": "구매 가격뿐 아니라 운송비, 재고비, 품질 비용, 폐기 비용 등 총소유비용(Total Cost of Ownership)을 산출하여 협상 기준으로 활용합니다. 단순 단가 비교를 넘어 종합적 비용 우위를 확보합니다."
             }
           ],
           "case": {
@@ -687,13 +687,13 @@
       },
       {
         "id": "dp3",
-        "question": "가격 협상력은 어느 정도입니까?",
-        "description": "공급업체와의 가격 협상에서 귀사의 영향력",
+        "question": "구매 시장에 대한 정보력과 전문성은 어느 정도입니까?",
+        "description": "공급업체 원가 구조, 시장 가격, 대안 등에 대한 정보 보유 수준",
         "options": [
-          {"value": 1, "label": "협상력이 거의 없음"},
-          {"value": 2, "label": "제한적 협상력"},
-          {"value": 3, "label": "상당한 협상력"},
-          {"value": 4, "label": "매우 강한 협상력"}
+          {"value": 1, "label": "시장 정보가 거의 없음"},
+          {"value": 2, "label": "기본적인 시장 정보 보유"},
+          {"value": 3, "label": "상세한 원가/시장 분석 역량 보유"},
+          {"value": 4, "label": "공급업체보다 높은 시장 정보력 보유"}
         ]
       },
       {

@@ -37,6 +37,20 @@ function initSurvey() {
   const savedAnswers = sessionStorage.getItem('surveyAnswers');
   if (savedAnswers) {
     answers = JSON.parse(savedAnswers);
+
+    // 마지막으로 응답한 질문 다음 위치로 복원
+    const questions = getAllQuestions();
+    for (let i = 0; i < questions.length; i++) {
+      const q = questions[i];
+      if (!answers[q.category][q.id]) {
+        currentQuestionIndex = i;
+        break;
+      }
+      // 모든 질문에 답변했으면 마지막 질문에 위치
+      if (i === questions.length - 1) {
+        currentQuestionIndex = i;
+      }
+    }
   }
 
   renderQuestion();
@@ -271,6 +285,9 @@ function renderResult(result) {
 
   // 체스보드 위치 표시
   highlightChessboardPosition(result.strategy);
+
+  // 경계값 근처일 때 인접 전략 안내
+  renderAdjacentStrategyNote(result);
 }
 
 function renderRecommendedLevers(strategy) {
@@ -302,7 +319,7 @@ function renderRecommendedLevers(strategy) {
         </div>
 
         <div class="lever-case">
-          <h4>${lever.case.title}</h4>
+          <h4>예시 시나리오: ${lever.case.title}</h4>
           <dl class="case-detail">
             <dt>산업</dt>
             <dd>${lever.case.industry}</dd>
@@ -337,6 +354,63 @@ function highlightChessboardPosition(strategyId) {
       cell.classList.add('active');
     }
   });
+}
+
+// ===== 인접 전략 안내 =====
+function renderAdjacentStrategyNote(result) {
+  const container = document.getElementById('adjacent-strategy-note');
+  if (!container || !leversData) return;
+
+  const THRESHOLD = 2.5;
+  const BOUNDARY_MARGIN = 0.4; // 경계값 ±0.4 이내면 인접 전략 안내
+  const supplyNearBoundary = Math.abs(result.supplyScore - THRESHOLD) <= BOUNDARY_MARGIN;
+  const demandNearBoundary = Math.abs(result.demandScore - THRESHOLD) <= BOUNDARY_MARGIN;
+
+  if (!supplyNearBoundary && !demandNearBoundary) {
+    container.style.display = 'none';
+    return;
+  }
+
+  // 인접 전략 ID 찾기
+  const adjacentIds = new Set();
+  const supplyHigh = result.supplyScore >= THRESHOLD;
+  const demandHigh = result.demandScore >= THRESHOLD;
+
+  if (supplyNearBoundary) {
+    // 공급력 축이 경계 근처 → 공급력 반대쪽 전략도 고려
+    const altStrategy = determineStrategy(supplyHigh ? THRESHOLD - 1 : THRESHOLD + 1, result.demandScore);
+    adjacentIds.add(altStrategy);
+  }
+  if (demandNearBoundary) {
+    // 수요력 축이 경계 근처 → 수요력 반대쪽 전략도 고려
+    const altStrategy = determineStrategy(result.supplyScore, demandHigh ? THRESHOLD - 1 : THRESHOLD + 1);
+    adjacentIds.add(altStrategy);
+  }
+
+  // 현재 전략 제외
+  adjacentIds.delete(result.strategy);
+
+  if (adjacentIds.size === 0) {
+    container.style.display = 'none';
+    return;
+  }
+
+  const adjacentNames = [...adjacentIds].map(id => {
+    const s = leversData.strategies.find(s => s.id === id);
+    return s ? `<strong>${s.name}</strong>` : '';
+  }).filter(Boolean);
+
+  container.style.display = '';
+  container.innerHTML = `
+    <div class="card" style="border-left: 4px solid var(--warning-color); background: rgba(243, 156, 18, 0.05);">
+      <h4 style="color: var(--warning-color);">인접 전략 참고</h4>
+      <p>분석 점수가 경계 영역에 위치하고 있어, ${adjacentNames.join(', ')} 전략의 레버도 함께 검토하면 효과적입니다.
+      실무에서는 인접 사분면의 레버를 조합하여 활용하는 것이 원본 프레임워크의 권장 사항입니다.</p>
+      <p style="margin-top: 8px; font-size: 0.9rem; color: var(--text-light);">
+        공급력 ${Math.round(result.supplyPercent)}% | 수요력 ${Math.round(result.demandPercent)}% (경계값: 50%)
+      </p>
+    </div>
+  `;
 }
 
 // ===== 레버 페이지 =====
@@ -610,7 +684,7 @@ function renderAllLevers() {
           </div>
 
           <div class="lever-case">
-            <h4>사례: ${lever.case.title}</h4>
+            <h4>예시 시나리오: ${lever.case.title}</h4>
             <dl class="case-detail">
               <dt>산업</dt>
               <dd>${lever.case.industry}</dd>
@@ -853,8 +927,14 @@ function shareResultLink() {
     return;
   }
 
-  // 결과를 Base64로 인코딩하여 URL 파라미터로 전달
-  const encoded = btoa(encodeURIComponent(resultData));
+  // 핵심 데이터만 추출하여 URL 길이 최소화
+  const result = JSON.parse(resultData);
+  const compact = {
+    ss: Math.round(result.supplyScore * 100) / 100,
+    ds: Math.round(result.demandScore * 100) / 100,
+    st: result.strategy
+  };
+  const encoded = btoa(JSON.stringify(compact));
   const baseUrl = window.location.origin + window.location.pathname;
   const shareUrl = `${baseUrl}?r=${encoded}`;
 
@@ -960,8 +1040,29 @@ function loadResultFromURL() {
 
   if (encodedResult) {
     try {
-      const decoded = decodeURIComponent(atob(encodedResult));
-      sessionStorage.setItem('surveyResult', decoded);
+      const decoded = atob(encodedResult);
+      let resultObj;
+
+      // compact 형식 (ss, ds, st) 또는 기존 전체 형식 지원
+      const parsed = JSON.parse(decoded);
+      if (parsed.ss !== undefined) {
+        // compact 형식에서 전체 형식으로 복원
+        const supplyScore = parsed.ss;
+        const demandScore = parsed.ds;
+        resultObj = {
+          supplyScore,
+          demandScore,
+          supplyPercent: ((supplyScore - 1) / 3) * 100,
+          demandPercent: ((demandScore - 1) / 3) * 100,
+          strategy: parsed.st,
+          answers: {}
+        };
+      } else {
+        // 기존 전체 형식 (하위 호환)
+        resultObj = parsed;
+      }
+
+      sessionStorage.setItem('surveyResult', JSON.stringify(resultObj));
       // URL에서 파라미터 제거 (깔끔한 URL 유지)
       window.history.replaceState({}, '', window.location.pathname);
       return true;
