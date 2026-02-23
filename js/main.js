@@ -476,7 +476,7 @@ function renderResult(result) {
   }
 
   // Phase 2 완료 여부 표시
-  if (result.phase2Completed && result.leverScores) {
+  if (strategy && result.phase2Completed && result.leverScores) {
     renderPhase2Summary(strategy, result.leverScores);
   }
 
@@ -485,6 +485,16 @@ function renderResult(result) {
 
   // 경계값 근처일 때 인접 전략 안내
   renderAdjacentStrategyNote(result);
+}
+
+// ===== 레버 배지 유틸리티 =====
+// 절대 점수 기준 + 상대 순위를 결합하여 항상 최소 1개의 추천을 보장
+function getLeverBadgeInfo(score, rank) {
+  if (score >= 4) return { badgeClass: 'relevance-top', badgeText: '최우선' };
+  if (score >= 3) return { badgeClass: 'relevance-high', badgeText: '권장' };
+  // 1순위 레버는 절대 점수가 낮더라도 '추천'으로 표시
+  if (rank === 0) return { badgeClass: 'relevance-recommended', badgeText: '추천' };
+  return { badgeClass: 'relevance-normal', badgeText: '참고' };
 }
 
 function renderRecommendedLevers(strategy, leverScores) {
@@ -506,24 +516,17 @@ function renderRecommendedLevers(strategy, leverScores) {
   container.innerHTML = levers.map((lever, index) => {
     // 레버 우선순위 배지 생성
     let relevanceBadge = '';
+    let isTopRecommended = false;
     if (leverScores && Object.keys(leverScores).length > 0) {
       const score = leverScores[lever.id]?.score || 0;
-      let badgeClass, badgeText;
-      if (score >= 4) {
-        badgeClass = 'relevance-top';
-        badgeText = '최우선';
-      } else if (score >= 3) {
-        badgeClass = 'relevance-high';
-        badgeText = '권장';
-      } else {
-        badgeClass = 'relevance-normal';
-        badgeText = '참고';
-      }
+      const { badgeClass, badgeText } = getLeverBadgeInfo(score, index);
       relevanceBadge = `<span class="lever-relevance ${badgeClass}">${badgeText}</span>`;
+      isTopRecommended = index === 0;
     }
 
     return `
-    <div class="lever-card">
+    <div class="lever-card ${isTopRecommended ? 'lever-card-recommended' : ''}">
+      ${isTopRecommended ? '<div class="recommended-banner">1순위 추천 레버</div>' : ''}
       <div class="lever-card-header ${strategyClass}">
         <span class="lever-id">${lever.id}</span>
         <div>
@@ -653,24 +656,34 @@ function renderPhase2Summary(strategy, leverScores) {
 
   const html = `
     <div class="phase2-summary">
-      <h4>레버 우선순위 (2단계 분석 결과)</h4>
+      <div class="phase2-summary-header">
+        <span class="phase2-complete-badge">2단계 심층 분석 완료</span>
+        <h4>레버 우선순위</h4>
+        <p class="phase2-summary-desc">설문 응답 기반으로 각 레버의 적용 관련성을 분석한 결과입니다.</p>
+      </div>
       <div class="lever-priority-list">
         ${sortedLevers.map((lever, idx) => {
           const score = leverScores[lever.id]?.score || 0;
-          let badgeClass, badgeText;
-          if (score >= 4) { badgeClass = 'relevance-top'; badgeText = '최우선'; }
-          else if (score >= 3) { badgeClass = 'relevance-high'; badgeText = '권장'; }
-          else { badgeClass = 'relevance-normal'; badgeText = '참고'; }
+          const { badgeClass, badgeText } = getLeverBadgeInfo(score, idx);
+          const scorePercent = (score / 4) * 100;
+          const isTop = idx === 0;
 
           return `
-            <div class="lever-priority-item">
-              <span class="lever-priority-rank">${idx + 1}</span>
-              <span class="lever-priority-name">${lever.name}</span>
+            <div class="lever-priority-item ${isTop ? 'lever-priority-top' : ''}">
+              <span class="lever-priority-rank ${isTop ? 'rank-top' : ''}">${idx + 1}</span>
+              <div class="lever-priority-info">
+                <span class="lever-priority-name">${lever.name}</span>
+                <div class="lever-priority-score-bar">
+                  <div class="lever-priority-score-fill ${badgeClass}" style="width: ${scorePercent}%"></div>
+                </div>
+                <span class="lever-priority-score-text">${score} / 4점</span>
+              </div>
               <span class="lever-relevance ${badgeClass}">${badgeText}</span>
             </div>
           `;
         }).join('')}
       </div>
+      <p class="phase2-summary-note">점수가 높을수록 해당 레버의 적용 관련성이 높습니다. 1순위 레버는 항상 추천됩니다.</p>
     </div>
   `;
 
@@ -1243,9 +1256,13 @@ function getResultText() {
         const scoreB = result.leverScores[b.id]?.score || 0;
         return scoreB - scoreA;
       });
-      levers.forEach(lever => {
+      levers.forEach((lever, index) => {
         const score = result.leverScores[lever.id]?.score || 0;
-        const rank = score >= 4 ? '★★★ 최우선' : score >= 3 ? '★★ 권장' : '★ 참고';
+        let rank;
+        if (score >= 4) rank = '★★★ 최우선';
+        else if (score >= 3) rank = '★★ 권장';
+        else if (index === 0) rank = '★★ 추천';
+        else rank = '★ 참고';
         text += `- [${rank}] ${lever.name}: ${lever.description}\n`;
       });
     } else {
